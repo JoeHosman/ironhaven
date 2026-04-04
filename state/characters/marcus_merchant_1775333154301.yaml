@@ -1,0 +1,20 @@
+id: marcus_merchant_1775333154301
+name: Marcus
+archetypeId: merchant
+traits:
+  strength: 2
+  cunning: 7
+  charisma: 7
+skills:
+  - haggling
+  - appraisal
+  - navigation
+locationId: ''
+factions: {}
+relationships: {}
+birthDate:
+  year: 800
+  season: spring
+  day: 1
+deathDate: null
+alive: true

@@ -1,1 +1,24 @@
-[]
+- id: entry_1775333166543
+  date:
+    year: 845
+    season: spring
+    day: 1
+  characterId: aldric_soldier_1775333154301
+  eventTemplateId: quiet_morning
+  choicesMade:
+    - help_lighting
+    - use_meal
+  consequences:
+    - type: relationship
+      target: '{organizer.id}'
+      value: 2
+    - type: faction
+      target: village_folk
+      value: 1
+    - type: stat
+      target: charisma
+      value: 1
+    - type: faction
+      target: village_folk
+      value: 1
+  summary: Aldric made 2 choices.
