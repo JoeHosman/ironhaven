@@ -1,0 +1,20 @@
+id: verse_bard_1775346059865
+name: Verse
+archetypeId: bard
+traits:
+  strength: 5
+  cunning: 5
+  charisma: 8
+skills:
+  - music
+  - storytelling
+  - performance
+locationId: ''
+factions: {}
+relationships: {}
+birthDate:
+  year: 800
+  season: spring
+  day: 1
+deathDate: null
+alive: true

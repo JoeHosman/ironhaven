@@ -37,3 +37,24 @@
       target: strength
       value: 1
   summary: Elena made 5 choices.
+- id: entry_1775346065690
+  date:
+    year: 845
+    season: spring
+    day: 1
+  characterId: verse_bard_1775346059865
+  eventTemplateId: election_day
+  choicesMade:
+    - ask_barkeep
+    - investigate_mill
+  consequences:
+    - type: stat
+      target: charisma
+      value: 1
+    - type: stat
+      target: strength
+      value: 1
+    - type: world_fact
+      target: investigating_mill
+      value: true
+  summary: Verse made 2 choices.
