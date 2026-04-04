@@ -1,0 +1,20 @@
+id: brenna_soldier_1775333222317
+name: Brenna
+archetypeId: soldier
+traits:
+  strength: 7
+  cunning: 3
+  charisma: 2
+skills:
+  - swordsmanship
+  - tactics
+  - endurance
+locationId: ''
+factions: {}
+relationships: {}
+birthDate:
+  year: 800
+  season: spring
+  day: 1
+deathDate: null
+alive: true

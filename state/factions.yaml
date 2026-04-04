@@ -1,1 +1,8 @@
-[]
+- id: town_guard
+  mood: 5
+- id: craftsmen_guild
+  mood: 6
+- id: merchant_guild
+  mood: 7
+- id: village_folk
+  mood: 6

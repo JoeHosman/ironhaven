@@ -1,24 +1,21 @@
-- id: entry_1775333166543
+- id: entry_1775333253583
   date:
-    year: 845
+    year: 863
     season: spring
-    day: 1
-  characterId: aldric_soldier_1775333154301
+    day: 29
+  characterId: brenna_soldier_1775333222317
   eventTemplateId: quiet_morning
   choicesMade:
-    - help_lighting
-    - use_meal
+    - ask_barkeep
+    - investigate_mill
   consequences:
-    - type: relationship
-      target: '{organizer.id}'
-      value: 2
-    - type: faction
-      target: village_folk
-      value: 1
     - type: stat
       target: charisma
       value: 1
-    - type: faction
-      target: village_folk
+    - type: stat
+      target: strength
       value: 1
-  summary: Aldric made 2 choices.
+    - type: world_fact
+      target: investigating_mill
+      value: true
+  summary: Brenna made 2 choices.

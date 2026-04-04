@@ -1,0 +1,20 @@
+id: fenwick_merchant_1775333228055
+name: Fenwick
+archetypeId: merchant
+traits:
+  strength: 5
+  cunning: 5
+  charisma: 8
+skills:
+  - haggling
+  - appraisal
+  - navigation
+locationId: ''
+factions: {}
+relationships: {}
+birthDate:
+  year: 800
+  season: spring
+  day: 1
+deathDate: null
+alive: true
