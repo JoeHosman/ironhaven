@@ -1,0 +1,24 @@
+id: elena_blacksmith_1775336429099
+name: Elena
+archetypeId: blacksmith
+traits:
+  strength: 9
+  cunning: 3
+  charisma: 6
+skills:
+  - forging
+  - haggling
+locationId: ''
+factions:
+  village_folk: 2
+relationships:
+  fenwick_merchant_1775333228055:
+    tags: []
+    axes:
+      affection: 2
+birthDate:
+  year: 800
+  season: spring
+  day: 1
+deathDate: null
+alive: true

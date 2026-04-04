@@ -1,14 +1,29 @@
-- id: entry_1775333253583
+- id: entry_1775336458970
   date:
-    year: 863
-    season: spring
-    day: 29
-  characterId: brenna_soldier_1775333222317
+    year: 853
+    season: winter
+    day: 27
+  characterId: elena_blacksmith_1775336429099
   eventTemplateId: quiet_morning
   choicesMade:
+    - help_lighting
+    - use_meal
     - ask_barkeep
     - investigate_mill
+    - visit_well
   consequences:
+    - type: relationship
+      target: '{organizer.id}'
+      value: 2
+    - type: faction
+      target: village_folk
+      value: 1
+    - type: stat
+      target: charisma
+      value: 1
+    - type: faction
+      target: village_folk
+      value: 1
     - type: stat
       target: charisma
       value: 1
@@ -18,4 +33,7 @@
     - type: world_fact
       target: investigating_mill
       value: true
-  summary: Brenna made 2 choices.
+    - type: stat
+      target: strength
+      value: 1
+  summary: Elena made 5 choices.
