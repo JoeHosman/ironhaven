@@ -1,0 +1,18 @@
+id: cemetery
+name: Cemetery
+
+tags:
+  - sacred
+  - quiet
+
+eventTags:
+  - intrigue
+  - exploration
+
+archetypeIds:
+  - gravedigger
+  - priest
+
+flavorTexts:
+  - Mossy stones lean at odd angles in the soft earth.
+  - A crow watches from atop the iron gate.

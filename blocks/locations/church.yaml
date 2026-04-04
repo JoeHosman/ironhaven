@@ -1,0 +1,17 @@
+id: church
+name: Church
+
+tags:
+  - sacred
+  - social
+
+eventTags:
+  - social
+  - intrigue
+
+archetypeIds:
+  - priest
+
+flavorTexts:
+  - Candles flicker on the stone altar.
+  - The smell of incense hangs in the still air.

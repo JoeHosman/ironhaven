@@ -1,0 +1,36 @@
+id: brewer
+name: Brewer
+
+traits:
+  strength:
+    min: 3
+    max: 6
+  cunning:
+    min: 4
+    max: 7
+  charisma:
+    min: 5
+    max: 8
+
+skills:
+  - brewing
+  - distilling
+  - tasting
+
+namingPatterns:
+  - Barley
+  - Hops
+  - Tilda
+  - Cask
+
+factions:
+  - merchant_guild
+
+locations:
+  - inn
+  - market_quarter
+
+activities:
+  - stirring the mash
+  - checking fermentation
+  - sampling ales

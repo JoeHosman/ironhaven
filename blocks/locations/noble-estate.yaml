@@ -1,0 +1,18 @@
+id: noble-estate
+name: Noble Estate
+
+tags:
+  - political
+  - luxury
+
+eventTags:
+  - intrigue
+  - social
+
+archetypeIds:
+  - noble
+  - knight
+
+flavorTexts:
+  - Tapestries line the cold stone corridors.
+  - A servant hurries past with a silver tray.

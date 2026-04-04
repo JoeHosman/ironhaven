@@ -1,0 +1,36 @@
+id: hunter
+name: Hunter
+
+traits:
+  strength:
+    min: 5
+    max: 8
+  cunning:
+    min: 5
+    max: 8
+  charisma:
+    min: 2
+    max: 5
+
+skills:
+  - tracking
+  - archery
+  - trapping
+
+namingPatterns:
+  - Hawk
+  - Briar
+  - Thorn
+  - Wynn
+
+factions:
+  - village_folk
+
+locations:
+  - forest
+  - market_quarter
+
+activities:
+  - checking snares
+  - skinning game
+  - reading tracks

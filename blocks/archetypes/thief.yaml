@@ -1,0 +1,36 @@
+id: thief
+name: Thief
+
+traits:
+  strength:
+    min: 2
+    max: 5
+  cunning:
+    min: 7
+    max: 10
+  charisma:
+    min: 4
+    max: 7
+
+skills:
+  - lockpicking
+  - stealth
+  - pickpocketing
+
+namingPatterns:
+  - Wren
+  - Flick
+  - Nyx
+  - Shade
+
+factions:
+  - underworld
+
+locations:
+  - market_quarter
+  - tavern
+
+activities:
+  - watching the crowd
+  - counting coins
+  - sharpening a blade

@@ -1,0 +1,36 @@
+id: scout
+name: Scout
+
+traits:
+  strength:
+    min: 4
+    max: 7
+  cunning:
+    min: 6
+    max: 9
+  charisma:
+    min: 3
+    max: 5
+
+skills:
+  - tracking
+  - stealth
+  - navigation
+
+namingPatterns:
+  - Ghost
+  - Lark
+  - Veil
+  - Dusk
+
+factions:
+  - town_guard
+
+locations:
+  - barracks
+  - forest
+
+activities:
+  - studying maps
+  - marking trails
+  - listening to the wind

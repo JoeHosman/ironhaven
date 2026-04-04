@@ -1,0 +1,35 @@
+id: farmer
+name: Farmer
+
+traits:
+  strength:
+    min: 4
+    max: 7
+  cunning:
+    min: 2
+    max: 5
+  charisma:
+    min: 3
+    max: 6
+
+skills:
+  - farming
+  - animal-care
+
+namingPatterns:
+  - Hilda
+  - Oswin
+  - Marta
+  - Clem
+
+factions:
+  - village_folk
+
+locations:
+  - farm
+  - market_quarter
+
+activities:
+  - tending crops
+  - feeding livestock
+  - mending fences

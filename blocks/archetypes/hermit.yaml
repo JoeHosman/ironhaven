@@ -1,0 +1,35 @@
+id: hermit
+name: Hermit
+
+traits:
+  strength:
+    min: 3
+    max: 5
+  cunning:
+    min: 6
+    max: 9
+  charisma:
+    min: 1
+    max: 3
+
+skills:
+  - survival
+  - herbalism
+  - meditation
+
+namingPatterns:
+  - Moss
+  - Silence
+  - Stone
+  - Hollow
+
+factions: []
+
+locations:
+  - forest
+  - crossroads
+
+activities:
+  - gathering roots
+  - watching birds
+  - sitting in silence

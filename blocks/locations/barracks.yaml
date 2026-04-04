@@ -1,0 +1,20 @@
+id: barracks
+name: Barracks
+
+tags:
+  - military
+  - training
+
+eventTags:
+  - action
+  - combat
+
+archetypeIds:
+  - soldier
+  - guard
+  - knight
+  - archer
+
+flavorTexts:
+  - The clang of steel echoes from the practice yard.
+  - Shields are stacked neatly along the wall.

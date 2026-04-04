@@ -1,0 +1,36 @@
+id: midwife
+name: Midwife
+
+traits:
+  strength:
+    min: 2
+    max: 5
+  cunning:
+    min: 5
+    max: 8
+  charisma:
+    min: 6
+    max: 9
+
+skills:
+  - medicine
+  - herbalism
+  - counseling
+
+namingPatterns:
+  - Nan
+  - Blythe
+  - Comfort
+  - Alma
+
+factions:
+  - village_folk
+
+locations:
+  - farm
+  - market_quarter
+
+activities:
+  - preparing linens
+  - boiling water
+  - calming a family

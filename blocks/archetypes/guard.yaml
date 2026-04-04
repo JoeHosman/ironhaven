@@ -1,0 +1,36 @@
+id: guard
+name: Guard
+
+traits:
+  strength:
+    min: 5
+    max: 8
+  cunning:
+    min: 3
+    max: 6
+  charisma:
+    min: 3
+    max: 6
+
+skills:
+  - patrol
+  - vigilance
+  - intimidation
+
+namingPatterns:
+  - Warden
+  - Sentry
+  - Gale
+  - Mace
+
+factions:
+  - town_guard
+
+locations:
+  - barracks
+  - market_quarter
+
+activities:
+  - walking the beat
+  - checking papers
+  - watching the gate
