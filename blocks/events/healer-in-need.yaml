@@ -1,0 +1,185 @@
+id: healer_in_need
+name: The Healer's Trial
+tags:
+  - social
+  - faith
+  - intrigue
+
+preconditions: []
+
+roles:
+  - id: healer
+    label: The Local Healer
+    archetypeFilter:
+      - farmer
+    traitRequirements:
+      charisma:
+        min: 4
+  - id: accuser
+    label: The Lead Accuser
+    archetypeFilter:
+      - farmer
+      - merchant
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      A crowd has gathered outside {healer.name}'s cottage. {accuser.name} stands at its
+      head, red-faced, pointing. "Three children took sick the week after she treated them!
+      She uses herbs nobody can name! I have seen lights in her window past midnight!"
+      {healer.name} stands in the doorway, composed but frightened. They have helped most
+      of this town at some point. Now the crowd is deciding something ugly.
+    choices:
+      - id: defend_healer
+        label: Step forward and defend {healer.name} publicly
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{healer.id}'
+            value: 3
+            axis: trust
+          - type: relationship_tag
+            target: '{healer.id}'
+            value: defended_by_player
+          - type: faction
+            target: village_folk
+            value: -1
+          - type: world_fact
+            target: defended_healer
+            value: true
+        exhaustionCost: 2
+        nextNodeId: defended
+      - id: investigate_privately
+        label: Pull back and investigate the accusations before acting
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: healer_investigated
+            value: true
+        exhaustionCost: 2
+        nextNodeId: investigated
+      - id: join_accusation
+        label: Add your voice to the accusation — something is odd about her
+        consequences:
+          - type: relationship
+            target: '{healer.id}'
+            value: -3
+            axis: rivalry
+          - type: relationship
+            target: '{accuser.id}'
+            value: 2
+            axis: trust
+          - type: faction
+            target: village_folk
+            value: 1
+          - type: world_fact
+            target: accused_healer
+            value: true
+        exhaustionCost: 1
+        nextNodeId: accused
+
+  defended:
+    id: defended
+    text: >-
+      You speak loud enough for the whole crowd to hear. You have seen {healer.name}'s work.
+      You name the people she has pulled back from fever. You ask {accuser.name} to name
+      exactly what they saw. The crowd shifts. Not all of them — but enough. {accuser.name}
+      sputters. {healer.name} catches your eye with a look of raw gratitude.
+    choices:
+      - id: keep_pushing
+        label: Keep pushing — name the ill children and ask if anyone has actually asked the healer
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: village_folk
+            value: 2
+          - type: relationship
+            target: '{accuser.id}'
+            value: -2
+            axis: rivalry
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: let_crowd_decide
+        label: You have said your piece — let the crowd make up its own mind
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null
+
+  investigated:
+    id: investigated
+    text: >-
+      You spend an afternoon asking quietly. The sick children's parents are not part of the
+      accusation — in fact they are baffled. The illness was already breaking when {healer.name}
+      arrived. {accuser.name} has a different grievance entirely: the healer refused to
+      recommend their cousin for something. This is not witchcraft. It is a grudge.
+    choices:
+      - id: expose_grudge_publicly
+        label: Take what you found to the square and expose the real motive
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{healer.id}'
+            value: 2
+            axis: trust
+          - type: relationship
+            target: '{accuser.id}'
+            value: -2
+            axis: rivalry
+          - type: world_fact
+            target: defended_healer
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: tell_healer_privately
+        label: Tell the healer privately and let them handle it
+        consequences:
+          - type: relationship
+            target: '{healer.id}'
+            value: 3
+            axis: trust
+          - type: world_fact
+            target: defended_healer
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+
+  accused:
+    id: accused
+    text: >-
+      Your voice tips the balance. The crowd surges forward. {healer.name} goes very still.
+      They do not look at you again. Three days later, they are gone from town — their cottage
+      dark and empty. You hear through others that someone died of fever that week without care.
+    choices:
+      - id: feel_the_weight
+        label: Sit with what you did. No justification today.
+        consequences:
+          - type: stat
+            target: cunning
+            value: -1
+          - type: faction
+            target: village_folk
+            value: -1
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: harden_yourself
+        label: You made a call. The world is not clean.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null

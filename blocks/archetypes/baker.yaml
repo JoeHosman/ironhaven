@@ -1,0 +1,36 @@
+id: baker
+name: Baker
+
+traits:
+  strength:
+    min: 3
+    max: 6
+  cunning:
+    min: 3
+    max: 5
+  charisma:
+    min: 5
+    max: 8
+
+skills:
+  - baking
+  - cooking
+  - early-rising
+
+namingPatterns:
+  - Dora
+  - Piet
+  - Rosie
+  - Ned
+
+factions:
+  - craftsmen_guild
+
+locations:
+  - market_quarter
+  - inn
+
+activities:
+  - kneading dough
+  - stoking the oven
+  - arranging loaves

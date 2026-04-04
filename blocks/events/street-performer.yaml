@@ -1,0 +1,167 @@
+id: street_performer
+name: The Street Performer
+tags:
+  - social
+  - romance
+
+preconditions: []
+
+roles:
+  - id: musician
+    label: A Traveling Musician
+    traitRequirements:
+      charisma:
+        min: 4
+  - id: crowd_member
+    label: An Enthusiastic Crowd Member
+    archetypeFilter:
+      - farmer
+      - merchant
+      - blacksmith
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      {musician.name} plays at the corner of Market Lane with a battered lute and a
+      voice that cuts clean through the noise. The melody is something you do not
+      recognise — not from around here. A small crowd has gathered. {crowd_member.name}
+      is already clapping time. {musician.name}'s eyes catch yours briefly, and they
+      hold the note an extra beat before moving on.
+    choices:
+      - id: stop_and_listen
+        label: Stop and listen properly, close enough for them to notice
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{musician.id}'
+            value: 2
+            axis: affection
+        exhaustionCost: 1
+        nextNodeId: listened
+      - id: join_the_dancing
+        label: Step into the space and dance — there is already dancing
+        consequences:
+          - type: stat
+            target: charisma
+            value: 2
+          - type: faction
+            target: village_folk
+            value: 2
+          - type: relationship
+            target: '{musician.id}'
+            value: 2
+            axis: affection
+        exhaustionCost: 2
+        nextNodeId: danced
+      - id: hire_them
+        label: Approach at the end of the set and ask what it would cost to hire them for an evening
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{musician.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: hired
+
+  listened:
+    id: listened
+    text: >-
+      When the set ends, {musician.name} drops into a seat beside you as though they
+      knew you would be there. "You have good ears," they say. "Most people stop listening
+      halfway through." They tune one string, watching you. There is an ease about them
+      that the road tends to give or take away. This one it gave.
+    choices:
+      - id: talk_longer
+        label: Stay and talk — you want to know where they came from
+        consequences:
+          - type: relationship
+            target: '{musician.id}'
+            value: 2
+            axis: affection
+          - type: stat
+            target: charisma
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: give_coin
+        label: Drop a coin in their case and say simply that it was beautiful
+        consequences:
+          - type: relationship
+            target: '{musician.id}'
+            value: 1
+            axis: affection
+          - type: faction
+            target: village_folk
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null
+
+  danced:
+    id: danced
+    text: >-
+      {crowd_member.name} whoops. More people join. {musician.name} grins and lifts the
+      tempo, watching you specifically. By the end of the third song you are breathing
+      hard and the crowd is loud and something that was tight in your chest has loosened.
+      {musician.name} calls out "Thank you — especially you" to the square without
+      specifying who.
+    choices:
+      - id: find_them_after
+        label: Find {musician.name} after the crowd thins
+        consequences:
+          - type: relationship
+            target: '{musician.id}'
+            value: 3
+            axis: affection
+          - type: relationship_tag
+            target: '{musician.id}'
+            value: danced_together
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: let_the_moment_be
+        label: Let it be what it was — a good afternoon, nothing more
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null
+
+  hired:
+    id: hired
+    text: >-
+      {musician.name} names a fair price and you agree it. "What is the occasion?" they
+      ask. You tell them. They nod, already considering arrangements. "I will need a corner,
+      two candles, and something warm to drink before I start." They extend a hand. A
+      practical person with a beautiful skill. You like them immediately.
+    choices:
+      - id: seal_with_advance
+        label: Pay half now to seal the arrangement
+        consequences:
+          - type: relationship
+            target: '{musician.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: musician_hired
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: confirm_details_first
+        label: Work out the details carefully before any money changes hands
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: musician_hired
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null

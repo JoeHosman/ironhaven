@@ -1,0 +1,36 @@
+id: noble
+name: Noble
+
+traits:
+  strength:
+    min: 2
+    max: 5
+  cunning:
+    min: 5
+    max: 8
+  charisma:
+    min: 7
+    max: 10
+
+skills:
+  - diplomacy
+  - command
+  - etiquette
+
+namingPatterns:
+  - Alaric
+  - Isolde
+  - Cedric
+  - Elara
+
+factions:
+  - nobility
+
+locations:
+  - noble-estate
+  - market_quarter
+
+activities:
+  - reviewing documents
+  - hosting guests
+  - inspecting holdings

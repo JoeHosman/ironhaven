@@ -1,0 +1,21 @@
+id: crossroads
+name: Crossroads
+
+tags:
+  - travel
+  - commerce
+
+eventTags:
+  - social
+  - action
+
+natural: true
+
+archetypeIds:
+  - courier
+  - wanderer
+  - merchant
+
+flavorTexts:
+  - Four roads meet beneath a weathered signpost.
+  - Dust from a passing cart settles slowly on the stones.

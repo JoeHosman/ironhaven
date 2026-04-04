@@ -1,0 +1,18 @@
+id: mine
+name: Mine
+
+tags:
+  - labor
+  - underground
+
+eventTags:
+  - exploration
+  - crafting
+
+archetypeIds:
+  - miner
+  - mason
+
+flavorTexts:
+  - Torchlight catches flecks of ore in the tunnel walls.
+  - The air is thick with dust and the smell of iron.

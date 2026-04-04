@@ -1,0 +1,35 @@
+id: bard
+name: Bard
+
+traits:
+  strength:
+    min: 2
+    max: 4
+  cunning:
+    min: 4
+    max: 7
+  charisma:
+    min: 7
+    max: 10
+
+skills:
+  - music
+  - storytelling
+  - performance
+
+namingPatterns:
+  - Lyric
+  - Cadence
+  - Verse
+  - Melody
+
+factions: []
+
+locations:
+  - inn
+  - tavern
+
+activities:
+  - tuning a lute
+  - composing a verse
+  - entertaining a crowd

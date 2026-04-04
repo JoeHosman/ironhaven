@@ -1,0 +1,180 @@
+id: the_magistrate
+name: The Magistrate's Interest
+tags:
+  - intrigue
+  - faction
+  - social
+
+preconditions:
+  - type: world_fact
+    key: spoke_at_meeting
+    value: true
+
+roles:
+  - id: magistrate
+    label: The Town Magistrate
+    traitRequirements:
+      cunning:
+        min: 5
+      charisma:
+        min: 4
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      Two days after the meeting, a sealed note arrives at your door. The seal is the
+      magistrate's — an unfamiliar hand pressed it. The note is brief: "If you have
+      further thoughts on the town's direction, I would welcome them. Come at your
+      convenience. — {magistrate.name}." You know {magistrate.name} by reputation:
+      careful, powerful, and not in the habit of wasting their attention on anyone.
+    choices:
+      - id: accept_invitation
+        label: Go to the magistrate's office the same day
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: faction
+            target: nobility
+            value: 1
+          - type: relationship
+            target: '{magistrate.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: went
+      - id: delay_and_prepare
+        label: Wait two days — you want to think before you speak
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+        exhaustionCost: 1
+        nextNodeId: prepared
+      - id: ignore_the_note
+        label: Leave the note unanswered — powerful people's interest is a trap
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{magistrate.id}'
+            value: -1
+            axis: rivalry
+        exhaustionCost: 0
+        nextNodeId: ignored
+
+  went:
+    id: went
+    text: >-
+      {magistrate.name}'s office is spare and deliberate — everything placed to tell you
+      something about who you are dealing with. They offer wine. They ask three questions
+      about the town that are actually one question: where do your loyalties sit? You
+      answer as honestly as you dare. They listen in the manner of someone who already
+      knows and wants to see if you do.
+    choices:
+      - id: speak_plainly
+        label: Speak plainly — you are not one for games
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{magistrate.id}'
+            value: 2
+            axis: respect
+          - type: world_fact
+            target: magistrate_relationship_open
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: play_the_game
+        label: Give them what they want to hear while revealing nothing vital
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 4
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: relationship
+            target: '{magistrate.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: magistrate_relationship_guarded
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null
+
+  prepared:
+    id: prepared
+    text: >-
+      When you arrive, {magistrate.name} notes the delay with a half-smile. "Cautious,"
+      they say. "Good." They ask fewer questions than you expected — they already have
+      answers to most of them. What they want is your read on the craftsmen's guild.
+      They want it honestly and they are paying attention.
+    choices:
+      - id: give_honest_read
+        label: Give them an honest assessment of the guild's state
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{magistrate.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: magistrate_relationship_open
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: deflect_the_question
+        label: Give a vague answer — the guild is nobody's friend to antagonise
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{magistrate.id}'
+            value: -1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: null
+
+  ignored:
+    id: ignored
+    text: >-
+      A week passes. Nothing happens. Then {magistrate.name} appears at your workshop
+      in person, unannounced. "You did not come," they say. Not a question. Not quite
+      an accusation. "I wondered what that meant." They are still deciding. So are you.
+    choices:
+      - id: explain_yourself
+        label: Explain — you needed time, not avoidance
+        consequences:
+          - type: relationship
+            target: '{magistrate.id}'
+            value: 1
+            axis: respect
+          - type: world_fact
+            target: magistrate_relationship_guarded
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: let_them_wonder
+        label: Say little. Let them make of it what they will.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{magistrate.id}'
+            value: -1
+            axis: trust
+        exhaustionCost: 0
+        nextNodeId: null

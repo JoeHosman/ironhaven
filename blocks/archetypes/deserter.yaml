@@ -1,0 +1,35 @@
+id: deserter
+name: Deserter
+
+traits:
+  strength:
+    min: 5
+    max: 8
+  cunning:
+    min: 4
+    max: 7
+  charisma:
+    min: 2
+    max: 5
+
+skills:
+  - swordsmanship
+  - survival
+  - stealth
+
+namingPatterns:
+  - Ghost
+  - Exile
+  - Remnant
+  - Stray
+
+factions: []
+
+locations:
+  - forest
+  - crossroads
+
+activities:
+  - looking over a shoulder
+  - hiding a uniform
+  - mapping escape routes

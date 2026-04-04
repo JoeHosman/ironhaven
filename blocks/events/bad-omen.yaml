@@ -1,0 +1,153 @@
+id: bad_omen
+name: A Bad Omen
+tags:
+  - intrigue
+  - faith
+  - social
+
+preconditions: []
+
+roles:
+  - id: elder
+    label: A Village Elder
+    archetypeFilter:
+      - farmer
+  - id: neighbor
+    label: A Superstitious Neighbor
+    archetypeFilter:
+      - farmer
+      - blacksmith
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      Three things in one morning: a crow lands on your windowsill and will not leave.
+      The milk {neighbor.name} left out has curdled solid, in summer. And at noon — high
+      summer noon — a dog howls from three streets over and is answered by two more. People
+      stop in the street. {elder.name} draws a ward-sign in the dust with their boot. "That
+      is the third sign this week," they say to nobody in particular.
+    choices:
+      - id: take_it_seriously
+        label: Take it seriously — ask the elder what the signs mean
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{elder.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: omen_investigated
+            value: true
+        exhaustionCost: 1
+        nextNodeId: took_seriously
+      - id: stay_rational
+        label: Explain the rational causes — it is just animals and weather
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: faction
+            target: village_folk
+            value: -1
+        exhaustionCost: 1
+        nextNodeId: rationalized
+      - id: feel_genuine_fear
+        label: Say nothing. You feel it too — something is wrong.
+        consequences:
+          - type: world_fact
+            target: omen_felt
+            value: true
+          - type: world_fact
+            target: omen_investigated
+            value: true
+        exhaustionCost: 0
+        nextNodeId: afraid
+
+  took_seriously:
+    id: took_seriously
+    text: >-
+      {elder.name} lists the signs on their fingers: crow at the threshold means a death
+      is near. Curdled milk unprovoked means the land is sickening. Dogs at noon means
+      something is approaching that the living cannot see. "What does it add up to?" you ask.
+      The elder looks at the horizon. "Nothing good. Prepare as you are able."
+    choices:
+      - id: make_preparations
+        label: Go home and quietly prepare — extra food, a blade near the door
+        consequences:
+          - type: world_fact
+            target: food_stockpiled
+            value: true
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: warn_others
+        label: Spread a quiet word among people you trust
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 2
+          - type: stat
+            target: charisma
+            value: 1
+        exhaustionCost: 2
+        nextNodeId: null
+
+  rationalized:
+    id: rationalized
+    text: >-
+      {neighbor.name} does not look convinced. {elder.name} gives you the patient look of
+      someone who has lived too long to argue. "Perhaps," the elder says. "But you will
+      forgive us for being careful." They walk back to their house and close the door. The
+      crow is still on your windowsill when you get home.
+    choices:
+      - id: reconsider_quietly
+        label: Look at the crow a long time. Maybe careful is not wrong.
+        consequences:
+          - type: world_fact
+            target: omen_investigated
+            value: true
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: dismiss_and_move_on
+        label: Shoo the crow off and get on with your day
+        consequences: []
+        exhaustionCost: 0
+        nextNodeId: null
+
+  afraid:
+    id: afraid
+    text: >-
+      You find yourself checking the windows twice that evening. The feeling does not have
+      a name — not quite dread, not quite warning — but it sits in your chest like a stone.
+      {neighbor.name} stops by after dark. "You felt it too," they say. It is not a question.
+    choices:
+      - id: admit_it
+        label: Admit it — yes, you felt it too
+        consequences:
+          - type: relationship
+            target: '{neighbor.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: omen_felt
+            value: true
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: deny_it
+        label: Deny it and say you were just tired
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null

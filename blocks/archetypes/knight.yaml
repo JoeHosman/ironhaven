@@ -1,0 +1,37 @@
+id: knight
+name: Knight
+
+traits:
+  strength:
+    min: 7
+    max: 10
+  cunning:
+    min: 3
+    max: 6
+  charisma:
+    min: 5
+    max: 8
+
+skills:
+  - swordsmanship
+  - horsemanship
+  - leadership
+
+namingPatterns:
+  - Sir Roland
+  - Dame Aveline
+  - Sir Gareth
+  - Dame Cordelia
+
+factions:
+  - nobility
+  - town_guard
+
+locations:
+  - barracks
+  - noble-estate
+
+activities:
+  - drilling with a sword
+  - grooming a warhorse
+  - polishing a crest

@@ -1,0 +1,19 @@
+id: docks
+name: Docks
+
+tags:
+  - commerce
+  - labor
+
+eventTags:
+  - action
+  - social
+
+archetypeIds:
+  - fisherman
+  - smuggler
+  - courier
+
+flavorTexts:
+  - Ropes creak as boats rock against the pilings.
+  - Gulls wheel overhead in the salt air.

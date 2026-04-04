@@ -1,0 +1,183 @@
+id: election_day
+name: Election Day
+tags:
+  - social
+  - faction
+  - intrigue
+
+preconditions: []
+
+roles:
+  - id: candidate_a
+    label: The Reformist Candidate
+    archetypeFilter:
+      - merchant
+      - blacksmith
+    traitRequirements:
+      charisma:
+        min: 4
+  - id: candidate_b
+    label: The Traditionalist Candidate
+    archetypeFilter:
+      - farmer
+    traitRequirements:
+      charisma:
+        min: 4
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      The square is dressed with banners in two colours. {candidate_a.name} stands on one
+      side with a circle of merchants behind them, promising change and open trade. On the
+      other side, {candidate_b.name} speaks of stability and tradition to a cluster of
+      grey-haired farmers. The vote is by show of hands at dusk. The town feels split down
+      the middle. People are watching which way everyone else will go.
+    choices:
+      - id: campaign_for_a
+        label: Spend the day canvassing for {candidate_a.name}
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: merchants_guild
+            value: 2
+          - type: faction
+            target: village_folk
+            value: -1
+          - type: relationship
+            target: '{candidate_a.id}'
+            value: 3
+            axis: trust
+        exhaustionCost: 2
+        nextNodeId: campaigned_a
+      - id: campaign_for_b
+        label: Spend the day supporting {candidate_b.name}'s campaign
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: village_folk
+            value: 2
+          - type: faction
+            target: merchants_guild
+            value: -1
+          - type: relationship
+            target: '{candidate_b.id}'
+            value: 3
+            axis: trust
+        exhaustionCost: 2
+        nextNodeId: campaigned_b
+      - id: undermine_process
+        label: Spread enough doubt about both candidates to keep power fragmented
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 5
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: faction
+            target: village_folk
+            value: -2
+          - type: world_fact
+            target: election_disrupted
+            value: true
+        exhaustionCost: 2
+        nextNodeId: undermined
+
+  campaigned_a:
+    id: campaigned_a
+    text: >-
+      You spend the day at doorways and market corners. Some people listen. A few change their
+      minds. {candidate_a.name} wins by a thin margin at dusk. They shake your hand in the
+      torchlight. "I will not forget who showed up," they say. Whether that is a promise or
+      a warning depends on how the next few months go.
+    choices:
+      - id: ask_for_nothing
+        label: Say you did it for the town, not for reward
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{candidate_a.id}'
+            value: 1
+            axis: respect
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: ask_for_consideration
+        label: Ask {candidate_a.name} to remember you when decisions are made
+        consequences:
+          - type: faction
+            target: nobility
+            value: 1
+          - type: world_fact
+            target: political_favour_owed
+            value: true
+        exhaustionCost: 0
+        nextNodeId: null
+
+  campaigned_b:
+    id: campaigned_b
+    text: >-
+      {candidate_b.name} wins by a comfortable margin and gives a short speech about roots
+      and patience. Afterward they find you in the crowd. "The new elder remembers their
+      friends," they say quietly. The merchants on the other side of the square are already
+      planning their response. The town has picked a direction, for now.
+    choices:
+      - id: accept_gratitude
+        label: Accept the gratitude and go home satisfied
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 1
+          - type: relationship
+            target: '{candidate_b.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: ask_what_comes_next
+        label: Ask the new elder what their first priority will be
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: political_favour_owed
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+
+  undermined:
+    id: undermined
+    text: >-
+      Whispers do their work. By dusk, neither candidate has a firm majority and the vote
+      is declared inconclusive. A council of three will govern temporarily. Chaos, some call
+      it. Others see an opening. You see both. Nobody knows you had anything to do with it.
+    choices:
+      - id: position_yourself_for_council
+        label: Position yourself to advise the temporary council
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: faction
+            target: nobility
+            value: 2
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: stay_invisible
+        label: Stay invisible. Fragmented power serves you better than consolidated power.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null

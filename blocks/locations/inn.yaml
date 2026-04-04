@@ -1,0 +1,20 @@
+id: inn
+name: Inn
+
+tags:
+  - social
+  - rest
+
+eventTags:
+  - social
+  - romance
+  - intrigue
+
+archetypeIds:
+  - innkeeper
+  - bard
+  - wanderer
+
+flavorTexts:
+  - Warm light spills from the common room window.
+  - The smell of roasting meat fills the low-beamed hall.

@@ -1,0 +1,36 @@
+id: fisherman
+name: Fisherman
+
+traits:
+  strength:
+    min: 4
+    max: 7
+  cunning:
+    min: 3
+    max: 6
+  charisma:
+    min: 3
+    max: 6
+
+skills:
+  - fishing
+  - swimming
+  - knot-tying
+
+namingPatterns:
+  - Pike
+  - Marina
+  - Gil
+  - Coral
+
+factions:
+  - village_folk
+
+locations:
+  - docks
+  - market_quarter
+
+activities:
+  - mending nets
+  - gutting fish
+  - watching the water

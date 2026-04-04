@@ -1,0 +1,36 @@
+id: carpenter
+name: Carpenter
+
+traits:
+  strength:
+    min: 5
+    max: 8
+  cunning:
+    min: 3
+    max: 6
+  charisma:
+    min: 3
+    max: 5
+
+skills:
+  - woodworking
+  - construction
+  - repair
+
+namingPatterns:
+  - Jorik
+  - Mabel
+  - Silas
+  - Hanne
+
+factions:
+  - craftsmen_guild
+
+locations:
+  - market_quarter
+  - farm
+
+activities:
+  - planing wood
+  - fitting joints
+  - measuring beams

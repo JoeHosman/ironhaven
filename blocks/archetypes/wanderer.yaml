@@ -1,0 +1,35 @@
+id: wanderer
+name: Wanderer
+
+traits:
+  strength:
+    min: 4
+    max: 6
+  cunning:
+    min: 5
+    max: 7
+  charisma:
+    min: 5
+    max: 7
+
+skills:
+  - navigation
+  - survival
+  - storytelling
+
+namingPatterns:
+  - Drift
+  - Journey
+  - Nomad
+  - Trail
+
+factions: []
+
+locations:
+  - crossroads
+  - inn
+
+activities:
+  - studying a map
+  - patching boots
+  - staring at the horizon

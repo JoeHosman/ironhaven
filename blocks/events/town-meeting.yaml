@@ -1,0 +1,160 @@
+id: town_meeting
+name: The Town Meeting
+tags:
+  - social
+  - faction
+  - intrigue
+
+preconditions: []
+
+roles:
+  - id: elder_leader
+    label: The Senior Elder
+    archetypeFilter:
+      - farmer
+      - merchant
+    traitRequirements:
+      charisma:
+        min: 5
+  - id: concerned_citizen
+    label: A Concerned Citizen
+    archetypeFilter:
+      - farmer
+      - blacksmith
+      - merchant
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      The bell rings three times — the town meeting summons. The hall is packed. {elder_leader.name}
+      stands at the front with a map and a grim expression. The agenda: the town's defences,
+      the failing eastern trade route, and the question of whether to send an envoy to the
+      capital for help. {concerned_citizen.name} is already on their feet before anyone is
+      called on. The hall buzzes. Everyone has an opinion. You have one too.
+    choices:
+      - id: speak_up
+        label: Ask to be recognised and make your view known
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: village_folk
+            value: 1
+          - type: world_fact
+            target: spoke_at_meeting
+            value: true
+        exhaustionCost: 2
+        nextNodeId: spoke
+      - id: listen_and_assess
+        label: Sit quietly and listen — you want to understand who stands where
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: listened
+      - id: push_own_agenda
+        label: Wait for the right moment, then steer the discussion to your own concerns
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: spoke_at_meeting
+            value: true
+        exhaustionCost: 2
+        nextNodeId: pushed_agenda
+
+  spoke:
+    id: spoke
+    text: >-
+      The hall goes quiet when you stand. {elder_leader.name} gives you the floor with a
+      slight nod. You make your case — clear, short, direct. {concerned_citizen.name} nods
+      vigorously. A merchant in the back crosses their arms. When you sit, the room has
+      shifted slightly. Not everyone agrees. But they heard you.
+    choices:
+      - id: follow_up_privately
+        label: Find {elder_leader.name} after and follow up privately
+        consequences:
+          - type: relationship
+            target: '{elder_leader.id}'
+            value: 2
+            axis: trust
+          - type: faction
+            target: nobility
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: let_it_stand
+        label: Let your words stand on their own
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null
+
+  listened:
+    id: listened
+    text: >-
+      You learn more in two hours of quiet watching than most people learn in a week.
+      {elder_leader.name} is hedging. {concerned_citizen.name} is afraid and covering it
+      with anger. The merchants want protection for their routes above all else. And someone
+      in the back row is writing everything down — not taking notes. Recording.
+    choices:
+      - id: identify_the_recorder
+        label: Find out who is recording the meeting and why
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: meeting_observer_known
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: approach_elder_after
+        label: Speak to {elder_leader.name} after — you have something useful to offer
+        consequences:
+          - type: relationship
+            target: '{elder_leader.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: spoke_at_meeting
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+
+  pushed_agenda:
+    id: pushed_agenda
+    text: >-
+      You wait until the debate gets circular — it always does — then you speak. Your
+      point is targeted and lands at the right moment. The discussion pivots. People
+      walk away thinking the outcome was inevitable rather than managed. {elder_leader.name}
+      watches you with new attention as the hall empties.
+    choices:
+      - id: acknowledge_the_move
+        label: Catch the elder's eye and give a small nod — an acknowledgement
+        consequences:
+          - type: relationship
+            target: '{elder_leader.id}'
+            value: 1
+            axis: respect
+          - type: world_fact
+            target: political_player_known
+            value: true
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: play_innocent
+        label: Leave as though nothing of note happened
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null

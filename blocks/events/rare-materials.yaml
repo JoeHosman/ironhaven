@@ -1,0 +1,136 @@
+id: rare_materials
+name: Rare Materials
+tags:
+  - trade
+  - crafting
+
+preconditions:
+  - type: world_fact
+    key: caravan_arrived
+    value: true
+
+roles:
+  - id: caravan_master
+    label: The Caravan Master
+    archetypeFilter:
+      - merchant
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      {caravan_master.name} finds you near the market and leans close. "I kept back some
+      items not for the public stalls. Southern ironwood. A jar of starfire flux — alchemist
+      grade. A length of wyvern-gut string." Their voice drops. "These do not come through
+      here often. First offer gets them." They name a price that would strain your coin but
+      is not impossible.
+    choices:
+      - id: buy_direct
+        label: Buy what you can afford without argument
+        consequences:
+          - type: relationship
+            target: '{caravan_master.id}'
+            value: 1
+            axis: trust
+          - type: faction
+            target: merchants_guild
+            value: 1
+          - type: world_fact
+            target: rare_materials_acquired
+            value: true
+        exhaustionCost: 1
+        nextNodeId: bought
+      - id: barter
+        label: Offer to barter — you have skills or goods worth trading
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: world_fact
+            target: rare_materials_acquired
+            value: true
+        exhaustionCost: 2
+        nextNodeId: bartered
+      - id: pass
+        label: The price is too steep — let this one go
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: passed
+
+  bought:
+    id: bought
+    text: >-
+      The materials are wrapped in oilcloth and pressed into your hands. {caravan_master.name}
+      ties the bundle with a cord of red wax. "Southern quality," they say. "You will not find
+      better in three towns." The weight of the parcel feels like potential.
+    choices:
+      - id: ask_what_to_make
+        label: Ask {caravan_master.name} what they have seen such materials used for
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: take_and_go
+        label: Thank them and head straight to your workshop
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null
+
+  bartered:
+    id: bartered
+    text: >-
+      You spend half an hour going back and forth. {caravan_master.name} is sharp but fair.
+      In the end you trade your labour — a repair job on two wagon wheels and a sharpening
+      of three of their tools — for the ironwood and the flux. Both of you walk away satisfied.
+    choices:
+      - id: start_work_now
+        label: Start the repairs immediately to seal the deal
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: relationship
+            target: '{caravan_master.id}'
+            value: 2
+            axis: respect
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: confirm_later
+        label: Agree to it, but do the work tomorrow
+        consequences: []
+        exhaustionCost: 0
+        nextNodeId: null
+
+  passed:
+    id: passed
+    text: >-
+      You walk away. Twenty paces on, you glance back. {caravan_master.name} is already
+      talking to someone else. The materials will be gone before the caravan rolls out.
+      Some opportunities do not wait.
+    choices:
+      - id: reconsider
+        label: Turn back — find the coin somehow
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: rare_materials_acquired
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: walk_on
+        label: Keep walking. There will be other caravans.
+        consequences: []
+        exhaustionCost: 0
+        nextNodeId: null

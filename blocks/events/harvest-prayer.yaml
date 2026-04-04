@@ -1,0 +1,159 @@
+id: harvest_prayer
+name: The Harvest Prayer
+tags:
+  - social
+  - faith
+
+preconditions:
+  - type: season
+    key: season
+    value: autumn
+
+roles:
+  - id: priest
+    label: The Village Priest
+    archetypeFilter:
+      - farmer
+    traitRequirements:
+      charisma:
+        min: 4
+  - id: old_farmer
+    label: An Old Farmer
+    archetypeFilter:
+      - farmer
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      The whole community is gathering at the edge of the first grain field. {priest.name}
+      leads a circle of prayer before the harvest begins — an old rite, older than the
+      current church, really, but nobody mentions that. {old_farmer.name} stands at the
+      back, hat in hands, eyes closed. The smell of turned earth and coming rain fills
+      the morning air.
+    choices:
+      - id: participate_fully
+        label: Join the circle and participate in the rite
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 2
+          - type: relationship
+            target: '{priest.id}'
+            value: 2
+            axis: trust
+          - type: stat
+            target: charisma
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: participated
+      - id: observe_from_edge
+        label: Stand at the edge and observe — respectful but not committed
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 1
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: observed
+      - id: slip_away
+        label: Slip away — you have work to do and cannot spare the morning
+        consequences:
+          - type: faction
+            target: village_folk
+            value: -1
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: slipped
+
+  participated:
+    id: participated
+    text: >-
+      The prayer is long and repetitive in the way that old words are — worn smooth by
+      use. {priest.name} draws a mark in the soil and speaks a promise on behalf of the
+      whole village. {old_farmer.name} cracks one eye open and looks at you. Afterward
+      they clap you on the shoulder. "Good to see a young one still showing up," they say.
+      "The land notices."
+    choices:
+      - id: ask_old_farmer
+        label: Ask {old_farmer.name} about the history of the rite
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{old_farmer.id}'
+            value: 2
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: stay_and_help_harvest
+        label: Stay on and help with the first cutting
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: faction
+            target: village_folk
+            value: 1
+        exhaustionCost: 2
+        nextNodeId: null
+
+  observed:
+    id: observed
+    text: >-
+      You watch from outside the circle. There is something in the moment — not religious,
+      exactly, but communal in a way that catches you off guard. These people have done
+      this together for generations. {old_farmer.name} opens their eyes after the prayer
+      and sees you standing apart. They say nothing, but their expression is not unkind.
+    choices:
+      - id: step_in_next_time
+        label: Make a quiet note to yourself — you will join next year
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: speak_to_priest
+        label: Approach {priest.name} after and ask about the words they spoke
+        consequences:
+          - type: relationship
+            target: '{priest.id}'
+            value: 1
+            axis: trust
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null
+
+  slipped:
+    id: slipped
+    text: >-
+      You are back in your workshop before the rite even ends. The morning is yours. But
+      you hear the singing from down the lane, carried on the wind. It sounds older than
+      the town. Your hands work, but your mind is elsewhere.
+    choices:
+      - id: feel_the_absence
+        label: Put down your tools for a minute. It is only a minute.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: keep_working
+        label: Keep working. The field will be there without your prayer.
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null

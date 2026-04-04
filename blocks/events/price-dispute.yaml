@@ -1,0 +1,195 @@
+id: price_dispute
+name: The Price Dispute
+tags:
+  - social
+  - trade
+  - faction
+
+preconditions: []
+
+roles:
+  - id: seller
+    label: A Market Seller
+    archetypeFilter:
+      - merchant
+      - farmer
+  - id: buyer
+    label: An Angry Buyer
+    archetypeFilter:
+      - merchant
+      - blacksmith
+      - farmer
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      The shouting starts at the grain stall. {buyer.name} has a fistful of coins and is
+      shaking them at {seller.name}. "You doubled the price since last week! You doubled it —
+      I can count!" {seller.name} sets their jaw. "Supply is down. The whole eastern harvest
+      is short. Blame the rain." A ring of onlookers has formed. Someone has to do something,
+      or this will turn physical.
+    choices:
+      - id: mediate
+        label: Step in and try to negotiate a middle price
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: village_folk
+            value: 2
+        exhaustionCost: 2
+        nextNodeId: mediated
+      - id: side_with_buyer
+        label: Back the buyer — price gouging is wrong
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 2
+          - type: faction
+            target: merchants_guild
+            value: -2
+          - type: relationship
+            target: '{buyer.id}'
+            value: 2
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: sided_buyer
+      - id: side_with_seller
+        label: Back the seller — supply and demand is the law of trade
+        consequences:
+          - type: faction
+            target: merchants_guild
+            value: 2
+          - type: faction
+            target: village_folk
+            value: -1
+          - type: relationship
+            target: '{seller.id}'
+            value: 2
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: sided_seller
+      - id: exploit_confusion
+        label: Buy up the grain yourself while they argue
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: faction
+            target: village_folk
+            value: -2
+        exhaustionCost: 1
+        nextNodeId: exploited
+
+  mediated:
+    id: mediated
+    text: >-
+      You talk them both down to a price neither loves. {buyer.name} grumbles but pays.
+      {seller.name} packs the grain with more force than necessary. The crowd disperses.
+      A woman nearby touches your arm. "Thank you," she says quietly. "Some of us are just
+      trying to eat."
+    choices:
+      - id: acknowledge_hardship
+        label: Acknowledge how hard things have got for the poor
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 2
+          - type: stat
+            target: charisma
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: move_on
+        label: Nod and move on — the moment is past
+        consequences: []
+        exhaustionCost: 0
+        nextNodeId: null
+
+  sided_buyer:
+    id: sided_buyer
+    text: >-
+      {seller.name} gives you a look that could curdle milk. {buyer.name} claps you on the
+      shoulder. "Good to know someone in this market has a conscience," they say. The crowd
+      murmurs approval. You have made one friend and one enemy in the same breath.
+    choices:
+      - id: warn_seller
+        label: Warn {seller.name} privately that this behaviour will cost them
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{seller.id}'
+            value: -1
+            axis: rivalry
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: leave_it
+        label: Let it sit — you said your piece
+        consequences: []
+        exhaustionCost: 0
+        nextNodeId: null
+
+  sided_seller:
+    id: sided_seller
+    text: >-
+      {buyer.name} spits at the cobblestones and shoves away through the crowd. {seller.name}
+      gives you a slow nod. "Smart person," they say. "Half these fools think grain grows
+      freely in drought year." They fold one coin into your palm. "For your trouble."
+    choices:
+      - id: accept_coin
+        label: Accept the coin without comment
+        consequences:
+          - type: relationship
+            target: '{seller.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: decline_coin
+        label: Decline — you did not do it for payment
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{seller.id}'
+            value: 2
+            axis: respect
+        exhaustionCost: 0
+        nextNodeId: null
+
+  exploited:
+    id: exploited
+    text: >-
+      While they argue, you quietly buy the best of the grain at the old price from the
+      seller's assistant, who barely notices you. {seller.name} realises too late. {buyer.name}
+      watches you leave with the sack and says nothing. Both of them stare. You have the grain.
+    choices:
+      - id: keep_it
+        label: Keep it for yourself — food stored is security
+        consequences:
+          - type: world_fact
+            target: food_stockpiled
+            value: true
+          - type: faction
+            target: village_folk
+            value: -1
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: share_it
+        label: Sell it on at the old price to whoever needs it most
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 3
+          - type: stat
+            target: charisma
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null

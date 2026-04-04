@@ -1,0 +1,155 @@
+id: broken_wheel
+name: Broken Wheel
+tags:
+  - social
+  - crafting
+
+preconditions: []
+
+roles:
+  - id: cart_driver
+    label: A Stranded Cart Driver
+    archetypeFilter:
+      - merchant
+      - farmer
+  - id: impatient_merchant
+    label: An Impatient Merchant
+    archetypeFilter:
+      - merchant
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      The main lane into the square is blocked. {cart_driver.name}'s cart has lost a
+      wheel at the worst possible point — hub deep in the channel, load spilled across
+      the cobblestones, horse standing patient as a saint. {impatient_merchant.name}
+      is already shouting from behind, their own cart unable to pass. {cart_driver.name}
+      is kneeling in the road, staring at the broken spoke, looking like they are deciding
+      whether to cry.
+    choices:
+      - id: help_fix_it
+        label: Roll up your sleeves and help fix the wheel
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: relationship
+            target: '{cart_driver.id}'
+            value: 3
+            axis: trust
+          - type: faction
+            target: village_folk
+            value: 1
+        exhaustionCost: 2
+        nextNodeId: fixed
+      - id: go_around
+        label: Pick your way through the spilled goods and go around
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: went_around
+      - id: charge_for_repair
+        label: Offer your skills — for a fee
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: faction
+            target: merchants_guild
+            value: 1
+        exhaustionCost: 2
+        nextNodeId: charged
+
+  fixed:
+    id: fixed
+    text: >-
+      The repair takes forty minutes and two pairs of hands. {cart_driver.name} knows their
+      way around a wheel — they are not helpless, just caught without tools. The lane opens.
+      {impatient_merchant.name} passes through without a word of thanks. {cart_driver.name}
+      offers you a wrapped cheese from the back of their cart. "It is all I have handy,"
+      they say. "But it is good."
+    choices:
+      - id: accept_cheese
+        label: Accept the cheese with genuine pleasure
+        consequences:
+          - type: relationship
+            target: '{cart_driver.id}'
+            value: 1
+            axis: affection
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: refuse_and_wave_off
+        label: Wave it off — you did not do it for payment
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{cart_driver.id}'
+            value: 1
+            axis: respect
+        exhaustionCost: 0
+        nextNodeId: null
+
+  went_around:
+    id: went_around
+    text: >-
+      You sidestep the cabbages and keep moving. Behind you, {cart_driver.name} is still
+      on their knees. {impatient_merchant.name} is still shouting. The sound follows you
+      for half a block. You have your day. They have their problem. The line between
+      those two things is what you are examining now.
+    choices:
+      - id: go_back
+        label: Stop and go back. It will not take long.
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: relationship
+            target: '{cart_driver.id}'
+            value: 2
+            axis: trust
+          - type: faction
+            target: village_folk
+            value: 1
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: keep_going
+        label: Keep going. You have your own work.
+        consequences: []
+        exhaustionCost: 0
+        nextNodeId: null
+
+  charged:
+    id: charged
+    text: >-
+      {cart_driver.name} looks at you with a flat expression, then at their coin purse,
+      then back at you. They pay. You fix the wheel properly. {impatient_merchant.name}
+      passes through and nods to you approvingly. The job is done and you are a few coins
+      richer. A fair transaction in a fair world. The cheese was probably better, but
+      nobody's measuring.
+    choices:
+      - id: do_good_work
+        label: Do the best repair job you can — your name is on it
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: faction
+            target: craftsmen_guild
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: quick_and_adequate
+        label: Make it hold and move on — it does not need to be beautiful
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null

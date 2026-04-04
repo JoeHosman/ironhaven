@@ -1,0 +1,175 @@
+id: trade_route_trouble
+name: Trade Route Trouble
+tags:
+  - action
+  - trade
+  - danger
+
+preconditions:
+  - type: questline_stage
+    key: demon_invasion
+    value: heroes_rally
+    operator: gte
+
+roles:
+  - id: merchant_driver
+    label: A Merchant Driver
+    archetypeFilter:
+      - merchant
+  - id: scout
+    label: A Town Scout
+    archetypeFilter:
+      - soldier
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      {merchant_driver.name} has not left the tavern in two days. The eastern road — their
+      only route to market — has had three attacks in a fortnight. Bandits, they say.
+      Or worse. {scout.name} confirms it: the old road past the mill bridge is being watched.
+      {merchant_driver.name} looks at you over their ale. "I need to move this shipment.
+      The town needs what I am carrying. But I cannot do it alone."
+    choices:
+      - id: escort_shipment
+        label: Offer to escort the shipment through to the next waypoint
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: relationship
+            target: '{merchant_driver.id}'
+            value: 3
+            axis: trust
+          - type: faction
+            target: merchants_guild
+            value: 2
+          - type: world_fact
+            target: escorted_shipment
+            value: true
+        exhaustionCost: 3
+        nextNodeId: escorted
+      - id: find_alternate_route
+        label: Work with {scout.name} to find an alternate route through the forest
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: relationship
+            target: '{scout.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: alternate_route_found
+            value: true
+        exhaustionCost: 2
+        nextNodeId: alternate
+      - id: stay_put
+        label: Advise them to wait — moving now is too dangerous
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: faction
+            target: merchants_guild
+            value: -1
+        exhaustionCost: 0
+        nextNodeId: stayed
+
+  escorted:
+    id: escorted
+    text: >-
+      The first hour is quiet — too quiet. At the mill bridge, three figures step from the
+      treeline. Not bandits. Hollow-eyed, jerking wrong, their blades too long. {merchant_driver.name}
+      goes pale. {scout.name}'s voice comes low behind you: "Move. Now."
+    choices:
+      - id: fight_through
+        label: Draw your weapon and fight a path through
+        preconditions:
+          - type: trait
+            key: strength
+            min: 5
+        consequences:
+          - type: stat
+            target: strength
+            value: 2
+          - type: faction
+            target: merchants_guild
+            value: 2
+          - type: questline
+            target: 'demon_invasion:border_defense'
+            value: 1
+        exhaustionCost: 4
+        nextNodeId: null
+      - id: run_and_split
+        label: Scatter — the driver takes the woods, you draw their attention
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{merchant_driver.id}'
+            value: 2
+            axis: respect
+        exhaustionCost: 3
+        nextNodeId: null
+
+  alternate:
+    id: alternate
+    text: >-
+      You and {scout.name} spend the morning on horseback picking a new route through the
+      western forest edge. It adds three hours to the journey but avoids the watched roads.
+      {merchant_driver.name} is sceptical until you map it out. "The ford at the stream
+      will hold a loaded cart?" you ask {scout.name}. "Barely," they say. "But it will hold."
+    choices:
+      - id: guide_personally
+        label: Personally guide the shipment along the new route
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: faction
+            target: merchants_guild
+            value: 2
+          - type: relationship
+            target: '{merchant_driver.id}'
+            value: 2
+            axis: trust
+        exhaustionCost: 3
+        nextNodeId: null
+      - id: hand_over_route
+        label: Hand the route details to the driver and wish them well
+        consequences:
+          - type: faction
+            target: merchants_guild
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null
+
+  stayed:
+    id: stayed
+    text: >-
+      {merchant_driver.name} stares at their hands. They know you are right. The town goes
+      short on supplies another few days. Word spreads that the roads are no longer safe.
+      {scout.name} catches your eye and gives a small nod — you read the situation honestly,
+      even if nobody thanks you for it.
+    choices:
+      - id: help_plan_alternatives
+        label: Sit down with {scout.name} and plan a proper solution
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{scout.id}'
+            value: 2
+            axis: trust
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: leave_it_to_others
+        label: You gave your advice. The rest is theirs to figure out.
+        consequences: []
+        exhaustionCost: 0
+        nextNodeId: null

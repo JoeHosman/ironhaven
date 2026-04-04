@@ -1,0 +1,18 @@
+id: farm
+name: Farm
+
+tags:
+  - rural
+  - labor
+
+eventTags:
+  - social
+  - crafting
+
+archetypeIds:
+  - farmer
+  - stable-hand
+
+flavorTexts:
+  - Rows of crops stretch toward the tree line.
+  - A rooster crows somewhere in the distance.

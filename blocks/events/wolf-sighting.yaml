@@ -1,0 +1,167 @@
+id: wolf_sighting
+name: Wolf Sighting
+tags:
+  - action
+  - exploration
+
+preconditions: []
+
+roles:
+  - id: shepherd
+    label: A Frightened Shepherd
+    archetypeFilter:
+      - farmer
+  - id: hunter
+    label: A Local Hunter
+    archetypeFilter:
+      - farmer
+      - soldier
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      {shepherd.name} runs into town at first light, sheep pen empty behind them. "Three of
+      them," they gasp. "Big ones, grey. They came out of the Ashwood." The flock is scattered
+      across the hillside. {hunter.name} is already checking their bow outside the tavern.
+      "I have been waiting for this," the hunter says. "They have been circling closer for
+      a month."
+    choices:
+      - id: hunt_with_hunter
+        label: Join {hunter.name} — go out and hunt the wolves
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: relationship
+            target: '{hunter.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: wolves_hunted
+            value: true
+        exhaustionCost: 3
+        nextNodeId: went_hunting
+      - id: track_them
+        label: Track the wolves to understand their range before deciding anything
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: wolves_tracked
+            value: true
+        exhaustionCost: 2
+        nextNodeId: tracked
+      - id: warn_shepherds
+        label: Warn the other shepherds and help them secure their pens
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 2
+          - type: relationship
+            target: '{shepherd.id}'
+            value: 3
+            axis: trust
+          - type: stat
+            target: charisma
+            value: 1
+        exhaustionCost: 2
+        nextNodeId: warned
+
+  went_hunting:
+    id: went_hunting
+    text: >-
+      You and {hunter.name} spend four hours in the Ashwood. You find two wolves at
+      midday — the third has vanished. {hunter.name} takes their shot. You move to
+      flank. When it is over, {hunter.name} crouches over the fallen animal. "Starving,"
+      they say. "Look at the ribs." You both pause with that.
+    choices:
+      - id: press_on_for_third
+        label: Track down the third wolf to finish it
+        preconditions:
+          - type: trait
+            key: strength
+            min: 4
+        consequences:
+          - type: stat
+            target: strength
+            value: 2
+          - type: faction
+            target: village_folk
+            value: 2
+        exhaustionCost: 3
+        nextNodeId: null
+      - id: turn_back
+        label: Turn back — two is enough, and the third will not come near now
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null
+
+  tracked:
+    id: tracked
+    text: >-
+      The tracks lead north, deeper into the Ashwood than you expected. They are not random
+      — the wolves are following a deliberate circuit, as though they are searching for
+      something rather than ranging for prey. You find three kill sites, all deer. At the
+      far end of the track you find a print larger than the others. A fourth wolf. Big.
+    choices:
+      - id: mark_and_report
+        label: Mark the territory on your mental map and report back to the town
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: faction
+            target: village_folk
+            value: 1
+          - type: world_fact
+            target: wolf_territory_mapped
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: follow_the_big_track
+        label: Follow the larger track further — you want to know what you are dealing with
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: wolf_den_suspected
+            value: true
+        exhaustionCost: 3
+        nextNodeId: null
+
+  warned:
+    id: warned
+    text: >-
+      You spend the morning going door to door among the farmsteads. Most are grateful.
+      Two ignore you. By evening the pens are tighter and people are keeping their
+      dogs close. {shepherd.name} finds you at the end of the day. "My flock is
+      accounted for," they say. "Every one of them. Thank you."
+    choices:
+      - id: accept_thanks
+        label: Accept the thanks simply and go home
+        consequences:
+          - type: relationship
+            target: '{shepherd.id}'
+            value: 1
+            axis: affection
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: ask_about_the_wolves
+        label: Ask if {shepherd.name} has seen wolves before around here
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: wolves_tracked
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null

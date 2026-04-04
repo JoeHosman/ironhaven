@@ -1,0 +1,189 @@
+id: market_thief
+name: The Market Thief
+tags:
+  - action
+  - social
+
+preconditions: []
+
+roles:
+  - id: thief
+    label: A Young Pickpocket
+    archetypeFilter:
+      - farmer
+  - id: victim
+    label: An Oblivious Victim
+    archetypeFilter:
+      - merchant
+      - farmer
+  - id: guard
+    label: A Town Guard
+    archetypeFilter:
+      - soldier
+    factionRequirements:
+      - town_guard
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      You see it clearly: {thief.name} — young, maybe fourteen — slides a hand into
+      {victim.name}'s coat pocket as they browse the bread stall. A purse, small, comes
+      out and vanishes into {thief.name}'s sleeve in one smooth motion. {victim.name}
+      notices nothing. {guard.name} is on the far side of the square with their back turned.
+      {thief.name}'s eyes flick up and find yours. For a moment you are the only two
+      people in the world who know what just happened.
+    choices:
+      - id: chase_thief
+        label: Chase {thief.name} down yourself
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: faction
+            target: town_guard
+            value: 1
+        exhaustionCost: 2
+        nextNodeId: chased
+      - id: alert_guard
+        label: Call across to {guard.name} immediately
+        consequences:
+          - type: faction
+            target: town_guard
+            value: 2
+          - type: relationship
+            target: '{guard.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: alerted
+      - id: let_it_go
+        label: Let it go — you have no idea what drives a person to this
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: faction
+            target: village_folk
+            value: -1
+        exhaustionCost: 0
+        nextNodeId: let_go
+      - id: follow_quietly
+        label: Follow {thief.name} quietly without raising a scene
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+        exhaustionCost: 1
+        nextNodeId: followed
+
+  chased:
+    id: chased
+    text: >-
+      {thief.name} runs like a cat — over the bread cart, through the alley, up a wall
+      you do not entirely clear. You catch them at the dead end behind the tanner's.
+      They are breathing hard. So are you. The purse is in their hand. They are younger
+      up close. And they are frightened.
+    choices:
+      - id: turn_in_to_guard
+        label: Take {thief.name} to {guard.name} and hand them over
+        consequences:
+          - type: faction
+            target: town_guard
+            value: 2
+          - type: relationship
+            target: '{thief.id}'
+            value: -2
+            axis: rivalry
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: take_purse_and_let_go
+        label: Take the purse back and let them go with a warning
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{thief.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 0
+        nextNodeId: null
+
+  alerted:
+    id: alerted
+    text: >-
+      {guard.name} moves fast when you point. {thief.name} runs. The guard calls for a
+      second guard by whistle. The square parts around the chase. {victim.name} finally
+      looks up, confused. {guard.name} catches {thief.name} at the far gate. The purse
+      comes back. {guard.name} nods to you across the square.
+    choices:
+      - id: stay_and_make_statement
+        label: Stay to give a statement if needed
+        consequences:
+          - type: faction
+            target: town_guard
+            value: 1
+          - type: relationship
+            target: '{guard.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: move_on
+        label: Your part is done — move on
+        consequences: []
+        exhaustionCost: 0
+        nextNodeId: null
+
+  let_go:
+    id: let_go
+    text: >-
+      {thief.name} is gone in three seconds. {victim.name} browses on. The purse is
+      probably already a street away. You wonder, briefly, what drove them to it —
+      hunger, desperation, habit. You wonder if that matters. You go about your day.
+    choices:
+      - id: check_on_victim
+        label: Quietly check on {victim.name} later in case they notice the loss
+        consequences:
+          - type: relationship
+            target: '{victim.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: do_nothing
+        label: Do nothing. Your conscience is your own.
+        consequences: []
+        exhaustionCost: 0
+        nextNodeId: null
+
+  followed:
+    id: followed
+    text: >-
+      {thief.name} leads you three blocks before ducking into a cellar entrance. You wait.
+      After a few minutes you realise there are at least two other children down there.
+      A small operation — not theft for pleasure. You can see the bones of their situation
+      from here without seeing their faces.
+    choices:
+      - id: report_location
+        label: Report the location to {guard.name} — this is more organised than one kid
+        consequences:
+          - type: faction
+            target: town_guard
+            value: 2
+          - type: world_fact
+            target: theft_ring_known
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: leave_them_to_it
+        label: Walk away. Whatever this is, there is a reason children end up here.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null

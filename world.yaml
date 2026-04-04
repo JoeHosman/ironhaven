@@ -28,6 +28,18 @@ startingFactions:
     name: Village Folk
     description: Common townsfolk
     initialMood: 6
+  - id: church_of_light
+    name: Church of Light
+    description: The local temple and its faithful
+    initialMood: 5
+  - id: underworld
+    name: Underworld
+    description: Criminals, smugglers, and those who live in shadows
+    initialMood: 3
+  - id: nobility
+    name: Nobility
+    description: The landed gentry and their households
+    initialMood: 6
 
 activeQuestlines:
   - demon_invasion

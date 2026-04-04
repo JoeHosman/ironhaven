@@ -1,0 +1,171 @@
+id: the_storm
+name: The Storm
+tags:
+  - social
+  - danger
+
+preconditions: []
+
+roles:
+  - id: neighbor
+    label: An Elderly Neighbor
+    archetypeFilter:
+      - farmer
+  - id: traveler
+    label: A Stranded Traveler
+    archetypeFilter:
+      - merchant
+      - soldier
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      The sky goes green at noon. Wind strips leaves from the market trees in a single gust.
+      By the time you hear the thunder, the rain is already sheeting sideways. The street
+      empties in seconds. {neighbor.name}'s shutters are flapping open down the lane — they
+      are old and cannot reach them. {traveler.name} is pressed under a cart across the
+      square, soaked and looking for somewhere to go. You have seconds before the worst
+      of it arrives.
+    choices:
+      - id: help_neighbor
+        label: Run to {neighbor.name}'s house and secure those shutters
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: relationship
+            target: '{neighbor.id}'
+            value: 3
+            axis: trust
+          - type: faction
+            target: village_folk
+            value: 2
+        exhaustionCost: 2
+        nextNodeId: helped_neighbor
+      - id: shelter_traveler
+        label: Call to {traveler.name} and pull them inside
+        consequences:
+          - type: relationship
+            target: '{traveler.id}'
+            value: 2
+            axis: trust
+          - type: stat
+            target: charisma
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: sheltered_traveler
+      - id: brave_the_storm
+        label: Head out into it — someone needs to check the market stalls
+        consequences:
+          - type: stat
+            target: strength
+            value: 2
+          - type: faction
+            target: merchants_guild
+            value: 1
+        exhaustionCost: 3
+        nextNodeId: braved_storm
+
+  helped_neighbor:
+    id: helped_neighbor
+    text: >-
+      You get the shutters latched just as the worst hits. Inside, {neighbor.name}'s small
+      house shudders. They bring out bread and a blanket without asking. You wait out
+      the storm together. They talk — about the last great storm, about the town before
+      your time, about their husband who died in winter. You listen.
+    choices:
+      - id: listen_all_the_way_through
+        label: Stay and listen until the storm passes
+        consequences:
+          - type: relationship
+            target: '{neighbor.id}'
+            value: 2
+            axis: affection
+          - type: stat
+            target: charisma
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: check_outside_when_calmer
+        label: When the wind drops, step out and check for damage
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 1
+          - type: stat
+            target: strength
+            value: 1
+        exhaustionCost: 2
+        nextNodeId: null
+
+  sheltered_traveler:
+    id: sheltered_traveler
+    text: >-
+      {traveler.name} drips on your floor and cannot stop shaking. They were on the road
+      when it hit — three hours from the last town. When the lightning is over they look
+      at you differently. "I would have been out there all night," they say. Over the
+      candle you learn they are carrying a sealed letter to the magistrate. They did not
+      mean to tell you that. The storm has a way of loosening things.
+    choices:
+      - id: ask_about_letter
+        label: Ask about the letter — casually, but ask
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: magistrate_letter_known
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: offer_food_and_say_nothing
+        label: Give them food and leave them to dry — their business is their own
+        consequences:
+          - type: relationship
+            target: '{traveler.id}'
+            value: 2
+            axis: affection
+          - type: stat
+            target: charisma
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null
+
+  braved_storm:
+    id: braved_storm
+    text: >-
+      You fight through rain that hits like thrown gravel. Three stalls have collapsed.
+      You drag canvas back over exposed goods, haul a fallen post off a barrel,
+      and get a cart wheel out of the flooding runnel. By the time the storm breaks
+      you are soaked to your skin and your hands are cut. The merchants whose stalls
+      you saved will remember.
+    choices:
+      - id: find_shelter_after
+        label: Find shelter and rest — you earned it
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: faction
+            target: merchants_guild
+            value: 2
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: keep_checking
+        label: Keep checking the square for anyone still trapped
+        preconditions:
+          - type: trait
+            key: strength
+            min: 4
+        consequences:
+          - type: stat
+            target: strength
+            value: 2
+          - type: faction
+            target: village_folk
+            value: 2
+        exhaustionCost: 3
+        nextNodeId: null

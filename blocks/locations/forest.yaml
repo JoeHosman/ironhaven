@@ -1,0 +1,20 @@
+id: forest
+name: Forest
+
+tags:
+  - wilderness
+  - nature
+
+eventTags:
+  - exploration
+  - action
+
+natural: true
+
+archetypeIds:
+  - hunter
+  - hermit
+
+flavorTexts:
+  - Shafts of light filter through the canopy.
+  - Something moves just beyond the treeline.

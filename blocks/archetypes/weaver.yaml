@@ -1,0 +1,36 @@
+id: weaver
+name: Weaver
+
+traits:
+  strength:
+    min: 2
+    max: 4
+  cunning:
+    min: 4
+    max: 7
+  charisma:
+    min: 4
+    max: 7
+
+skills:
+  - weaving
+  - dyeing
+  - sewing
+
+namingPatterns:
+  - Lena
+  - Tobias
+  - Faye
+  - Elton
+
+factions:
+  - craftsmen_guild
+
+locations:
+  - market_quarter
+  - farm
+
+activities:
+  - working the loom
+  - sorting thread
+  - examining patterns

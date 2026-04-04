@@ -1,0 +1,35 @@
+id: beggar
+name: Beggar
+
+traits:
+  strength:
+    min: 2
+    max: 4
+  cunning:
+    min: 5
+    max: 8
+  charisma:
+    min: 4
+    max: 7
+
+skills:
+  - observation
+  - begging
+  - eavesdropping
+
+namingPatterns:
+  - Patch
+  - Dust
+  - Barefoot
+  - Whisper
+
+factions: []
+
+locations:
+  - market_quarter
+  - crossroads
+
+activities:
+  - sitting by the gate
+  - watching passersby
+  - counting scraps

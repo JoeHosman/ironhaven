@@ -1,0 +1,162 @@
+id: caravan_arrival
+name: Caravan Arrival
+tags:
+  - social
+  - trade
+  - exploration
+
+preconditions: []
+
+roles:
+  - id: caravan_master
+    label: The Caravan Master
+    archetypeFilter:
+      - merchant
+  - id: exotic_vendor
+    label: An Exotic Vendor
+    archetypeFilter:
+      - merchant
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      A line of laden wagons rolls through the gate just after midday — dust-caked canvas,
+      foreign horses, and the smell of spices you cannot name. {caravan_master.name} stands
+      on the footboard of the lead wagon calling out the goods in a voice like a town crier.
+      {exotic_vendor.name} is already unrolling bolts of southern cloth from the second cart.
+      The square fills with curious townsfolk.
+    choices:
+      - id: browse_goods
+        label: Browse the stalls and see what is on offer
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: caravan_arrived
+            value: true
+        exhaustionCost: 1
+        nextNodeId: browsed
+      - id: offer_to_help_unload
+        label: Offer to help unload in exchange for a fair look at the goods
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: relationship
+            target: '{caravan_master.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: caravan_arrived
+            value: true
+        exhaustionCost: 2
+        nextNodeId: helped_unload
+      - id: speak_to_master
+        label: Introduce yourself to {caravan_master.name} directly
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{caravan_master.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: caravan_arrived
+            value: true
+        exhaustionCost: 1
+        nextNodeId: met_master
+
+  browsed:
+    id: browsed
+    text: >-
+      The carts hold things you have not seen in Ironhaven before — dark spices in clay jars,
+      a cage of songbirds with red-tipped wings, blades with a strange rippled grain to the
+      steel. {exotic_vendor.name} watches you handle a small bronze mirror, their expression
+      professionally neutral. "Interest without coin is just looking," they say pleasantly.
+    choices:
+      - id: make_a_purchase
+        label: Buy something small — a spice, a curiosity
+        consequences:
+          - type: relationship
+            target: '{exotic_vendor.id}'
+            value: 2
+            axis: trust
+          - type: faction
+            target: merchants_guild
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: ask_about_origin
+        label: Ask where they have come from and what the roads are like
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: road_conditions_known
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+
+  helped_unload:
+    id: helped_unload
+    text: >-
+      You spend an hour heaving crates and bundles. {caravan_master.name} passes you a small
+      pouch — a few coins and a paper of dried southern pepper. "You work without complaint,"
+      they say, looking you over. "We will be here three days. If you want first pick of the
+      rare stock before it hits the stalls, come find me at dusk."
+    choices:
+      - id: accept_offer
+        label: Accept — first pick of the rare stock is worth knowing about
+        consequences:
+          - type: relationship
+            target: '{caravan_master.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: caravan_insider
+            value: true
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: thank_and_go
+        label: Thank them and go about your day
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null
+
+  met_master:
+    id: met_master
+    text: >-
+      {caravan_master.name} looks you up and down with the practiced eye of someone who has
+      assessed a thousand strangers. "You live here?" they ask. "Good. Tell me — is the
+      cloth merchant on the corner honest? We had trouble with short-weighing on the last
+      run." They have a question, and they are offering something in return.
+    choices:
+      - id: answer_honestly
+        label: Give them an honest assessment of the local merchants
+        consequences:
+          - type: relationship
+            target: '{caravan_master.id}'
+            value: 3
+            axis: trust
+          - type: world_fact
+            target: caravan_insider
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: be_vague
+        label: Keep your answer vague — no sense making enemies either way
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null

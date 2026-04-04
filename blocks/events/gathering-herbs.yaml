@@ -1,0 +1,160 @@
+id: gathering_herbs
+name: Gathering Herbs
+tags:
+  - exploration
+  - crafting
+
+preconditions: []
+
+roles:
+  - id: apothecary
+    label: A Local Apothecary
+    archetypeFilter:
+      - farmer
+      - merchant
+  - id: child
+    label: A Foraging Child
+    archetypeFilter:
+      - farmer
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      You head into the forest south of town with a basket and a purpose — the healer's
+      list, a commission for {apothecary.name}, or just the need to get out of walls for
+      a while. The Ashwood in morning is another world: mist between the roots, birds you
+      cannot see. You find the first patch of what you came for. Then the path splits in
+      three directions and you realise you have not paid attention for twenty minutes.
+    choices:
+      - id: search_carefully
+        label: Move slowly and look for landmarks — find the right herbs first
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: herbs_gathered
+            value: true
+        exhaustionCost: 2
+        nextNodeId: searched_carefully
+      - id: follow_child
+        label: Follow {child.name} — you spotted them darting through the trees
+        consequences:
+          - type: relationship
+            target: '{child.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: herbs_gathered
+            value: true
+        exhaustionCost: 1
+        nextNodeId: followed_child
+      - id: venture_deeper
+        label: Go deeper — the good herbs are never near the path
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: forest_depths_explored
+            value: true
+        exhaustionCost: 3
+        nextNodeId: went_deeper
+
+  searched_carefully:
+    id: searched_carefully
+    text: >-
+      An hour of patient work fills half the basket. You find yarrow, a cluster of dried
+      weld, and — pressed against a mossy log — something you do not recognise: dark leaves
+      shaped like hands, smelling faintly of copper. {apothecary.name} will either know
+      it or want to.
+    choices:
+      - id: take_unknown_herb
+        label: Take a cutting of the unknown plant to show {apothecary.name}
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: unknown_herb_found
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: leave_it
+        label: Leave the unknown plant alone — you know better
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null
+
+  followed_child:
+    id: followed_child
+    text: >-
+      {child.name} knows this forest better than anyone. They lead you to a hollow where
+      the herbs grow thick — feverfew, meadowsweet, and a clump of something purple you
+      fill both hands with before the child says: "My grandmother says not to eat that one."
+      You stop with your hands full.
+    choices:
+      - id: ask_child_what_it_is
+        label: Ask the child what their grandmother told them about it
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{child.id}'
+            value: 2
+            axis: affection
+          - type: world_fact
+            target: unknown_herb_found
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: take_it_anyway
+        label: Take it anyway — eating it and studying it are different
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: unknown_herb_found
+            value: true
+        exhaustionCost: 0
+        nextNodeId: null
+
+  went_deeper:
+    id: went_deeper
+    text: >-
+      Half an hour into the deep wood, the path disappears. The trees are older here,
+      bark grey and rough as stone. Your basket is nearly full — you found everything
+      and more. Then you hear something large move in the undergrowth ahead. It stops.
+      You stop. The forest waits.
+    choices:
+      - id: back_away_slowly
+        label: Back away without making noise — you have what you need
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: investigate_sound
+        label: Creep forward — you need to know what that was
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 4
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: forest_creature_encountered
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null

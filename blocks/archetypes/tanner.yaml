@@ -1,0 +1,36 @@
+id: tanner
+name: Tanner
+
+traits:
+  strength:
+    min: 5
+    max: 8
+  cunning:
+    min: 3
+    max: 5
+  charisma:
+    min: 2
+    max: 4
+
+skills:
+  - leatherwork
+  - curing
+  - tanning
+
+namingPatterns:
+  - Gust
+  - Helga
+  - Rolf
+  - Agneta
+
+factions:
+  - craftsmen_guild
+
+locations:
+  - market_quarter
+  - docks
+
+activities:
+  - scraping hides
+  - mixing solutions
+  - cutting leather

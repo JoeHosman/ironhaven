@@ -1,0 +1,168 @@
+id: tavern_brawl
+name: Tavern Brawl
+tags:
+  - action
+  - social
+
+preconditions: []
+
+roles:
+  - id: fighter_a
+    label: A Belligerent Regular
+    archetypeFilter:
+      - blacksmith
+      - soldier
+    traitRequirements:
+      strength:
+        min: 4
+  - id: fighter_b
+    label: An Angry Stranger
+    archetypeFilter:
+      - merchant
+      - soldier
+  - id: barkeep
+    label: The Barkeeper
+    archetypeFilter:
+      - merchant
+      - farmer
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      It starts over a spilled drink — or so it looks. {fighter_a.name} has had their
+      fill of whatever came before this moment. {fighter_b.name} is on their feet and
+      the table between them has gone over. The room picks sides in seconds. {barkeep.name}
+      is already reaching under the counter. You are three steps from the door and two
+      steps from the middle of it.
+    choices:
+      - id: join_fight
+        label: Wade in on {fighter_a.name}'s side — they are a regular here
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: relationship
+            target: '{fighter_a.id}'
+            value: 2
+            axis: trust
+          - type: relationship
+            target: '{fighter_b.id}'
+            value: -2
+            axis: rivalry
+        exhaustionCost: 2
+        nextNodeId: joined
+      - id: break_it_up
+        label: Step between them and call it to a halt
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{barkeep.id}'
+            value: 2
+            axis: trust
+          - type: faction
+            target: village_folk
+            value: 1
+        exhaustionCost: 2
+        nextNodeId: broke_it_up
+      - id: slip_out
+        label: Drain your cup and slip out while everyone is looking at the brawl
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: slipped_out
+
+  joined:
+    id: joined
+    text: >-
+      It is loud and close and not entirely unpleasant. {fighter_b.name} is better than
+      they looked. You take a glancing blow to the shoulder before the guards arrive.
+      {barkeep.name} slams a cudgel on the counter. Everyone freezes. In the ringing
+      silence, {fighter_a.name} grins at you. "Good to know who's got your back,"
+      they say.
+    choices:
+      - id: laugh_it_off
+        label: Laugh it off and buy the table a round
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 2
+          - type: relationship
+            target: '{fighter_a.id}'
+            value: 1
+            axis: affection
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: make_peace_with_fighter_b
+        label: Offer your hand to {fighter_b.name} — no real hard feelings
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{fighter_b.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: null
+
+  broke_it_up:
+    id: broke_it_up
+    text: >-
+      It takes nerve to stand between two people who want to hit something. You get
+      jostled but not struck. Your voice carries enough authority to stop the room.
+      {barkeep.name} mouths "thank you" across the counter. {fighter_a.name} sits down.
+      {fighter_b.name} heads for the door. The room settles back into noise.
+    choices:
+      - id: ask_barkeep_what_started_it
+        label: Ask {barkeep.name} what actually started this
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{barkeep.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: sit_back_down
+        label: Sit back down and finish your drink
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null
+
+  slipped_out:
+    id: slipped_out
+    text: >-
+      The cold air is a relief. Behind you the tavern window shows silhouettes swinging.
+      You are free of it, clean, and slightly sorry you missed whatever came next. Three
+      hours later you hear {fighter_a.name} broke a table and {fighter_b.name} spent the
+      night in the guard house. The barkeep was not hurt. Small mercies.
+    choices:
+      - id: feel_no_regret
+        label: Smart call. Not your fight.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: check_on_barkeep
+        label: Go back in the morning and check on {barkeep.name}
+        consequences:
+          - type: relationship
+            target: '{barkeep.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: null

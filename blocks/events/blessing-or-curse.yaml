@@ -1,0 +1,165 @@
+id: blessing_or_curse
+name: Blessing or Curse
+tags:
+  - faith
+  - mystery
+  - intrigue
+
+preconditions:
+  - operator: or
+    conditions:
+      - type: world_fact
+        key: shrine_honored
+        value: true
+      - type: world_fact
+        key: artifact_taken
+        value: true
+
+roles:
+  - id: wise_woman
+    label: A Wise Woman
+    archetypeFilter:
+      - farmer
+    traitRequirements:
+      cunning:
+        min: 4
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      It has been a week since the shrine. Strange things, small ones: your tools stay sharp
+      past reason. Bread you baked lasts twice as long. A dog follows you for two days and
+      then disappears. At night, you dream of roots and stone and something watching from
+      below the earth. {wise_woman.name} stops you in the lane. "Something has marked you,"
+      she says without greeting. "I can see it. The question is whether it means you well."
+    choices:
+      - id: seek_help
+        label: Ask {wise_woman.name} to help you understand what happened
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{wise_woman.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: marking_investigated
+            value: true
+        exhaustionCost: 1
+        nextNodeId: sought_help
+      - id: embrace_it
+        label: Embrace whatever it is — the benefits are real
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: marking_embraced
+            value: true
+        exhaustionCost: 0
+        nextNodeId: embraced
+      - id: hide_it
+        label: Thank her and deny anything strange is happening
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: marking_hidden
+            value: true
+        exhaustionCost: 0
+        nextNodeId: hidden
+
+  sought_help:
+    id: sought_help
+    text: >-
+      {wise_woman.name} sits with you for an hour, asking questions. Did you take something
+      from the shrine? Did you leave an offering? Were you alone? Her expression grows
+      thoughtful rather than alarmed. "It is old power," she says finally. "Not evil. But
+      it has a price. Things that come easily start to cost you elsewhere. Be careful what
+      you use it for."
+    choices:
+      - id: use_it_sparingly
+        label: Heed the warning — use whatever gift this is sparingly
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: marking_understood
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: ask_how_to_remove_it
+        label: Ask how to remove the marking entirely
+        consequences:
+          - type: relationship
+            target: '{wise_woman.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: marking_removal_sought
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+
+  embraced:
+    id: embraced
+    text: >-
+      You lean into it. Your work goes better. Your body aches less. People seem to listen
+      to you more readily. {wise_woman.name} watches you from across the market a few days
+      later. She does not approach. But her expression is not disapproving — it is cautious.
+      Like someone watching a fire that has not yet decided what to burn.
+    choices:
+      - id: check_in_with_her
+        label: Seek out {wise_woman.name} and ask if she sees anything worrying
+        consequences:
+          - type: relationship
+            target: '{wise_woman.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: marking_investigated
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: enjoy_the_gift
+        label: Trust yourself. This is a good thing.
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null
+
+  hidden:
+    id: hidden
+    text: >-
+      {wise_woman.name} watches you walk away. "As you like," she calls after you. "But
+      it knows you have it. And things that are ignored have a way of announcing themselves."
+      That night, the dreams are louder.
+    choices:
+      - id: go_back_and_talk
+        label: Go back to her the next morning and tell the truth
+        consequences:
+          - type: relationship
+            target: '{wise_woman.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: marking_investigated
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: endure_it
+        label: Endure it alone. Whatever this is, you will manage.
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null

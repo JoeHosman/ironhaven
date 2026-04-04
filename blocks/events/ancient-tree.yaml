@@ -1,0 +1,164 @@
+id: ancient_tree
+name: The Ancient Tree
+tags:
+  - exploration
+  - mystery
+  - faith
+
+preconditions: []
+
+roles:
+  - id: scholar
+    label: A Wandering Scholar
+    archetypeFilter:
+      - merchant
+    traitRequirements:
+      cunning:
+        min: 5
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      You find it deep in the Ashwood — an oak that should not be possible. Three men could
+      not link hands around its trunk. The bark is carved in patterns you half-recognise:
+      the same shapes from the shrine in the cellar. The same shapes from the passage below
+      the square. The roots have pushed up the ground in a ring and the air smells of stone
+      and iron and something very old. {scholar.name} is crouched at the base, copying the
+      carvings into a small book.
+    choices:
+      - id: study_carvings
+        label: Study the carvings carefully alongside {scholar.name}
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: relationship
+            target: '{scholar.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: ancient_tree_studied
+            value: true
+        exhaustionCost: 2
+        nextNodeId: studied
+      - id: take_a_cutting
+        label: Cut a small branch from the tree to bring back
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: ancient_tree_cutting
+            value: true
+        exhaustionCost: 1
+        nextNodeId: cut_branch
+      - id: pray_beneath_it
+        label: Lay your hand on the bark and say something — even if you do not know what
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: world_fact
+            target: ancient_tree_honored
+            value: true
+        exhaustionCost: 1
+        nextNodeId: prayed
+
+  studied:
+    id: studied
+    text: >-
+      {scholar.name} shows you their notes. The carvings are a map — not of roads, but of
+      something beneath them. Confluences. Nodes. The tree sits at the centre of a web that
+      includes the cellar, the passage, the old mill, and a point outside town you cannot
+      identify. "This was not made by human hands," {scholar.name} says quietly. "Or not
+      only human." They look at the tree and back at you. "What do we do with this?"
+    choices:
+      - id: keep_the_knowledge
+        label: Agree to keep this between the two of you for now
+        consequences:
+          - type: relationship
+            target: '{scholar.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: confluence_map_known
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: tell_the_town
+        label: This is too important to keep secret — the town should know
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: village_folk
+            value: 1
+          - type: world_fact
+            target: confluence_map_known
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null
+
+  cut_branch:
+    id: cut_branch
+    text: >-
+      The blade meets no resistance — the wood is impossibly dense but it cuts as though it
+      wants to. The branch is heavier than it looks, warm to the touch. As you pull it free,
+      every bird in the nearby wood falls silent at once. {scholar.name} looks up from their
+      notes. Then back down. They say nothing. But they write something.
+    choices:
+      - id: ask_what_they_wrote
+        label: Ask {scholar.name} what they just recorded
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{scholar.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: carry_branch_home
+        label: Wrap the branch and carry it home — you will figure out what it is
+        consequences:
+          - type: world_fact
+            target: ancient_branch_held
+            value: true
+        exhaustionCost: 0
+        nextNodeId: null
+
+  prayed:
+    id: prayed
+    text: >-
+      You are not sure what you said. Something honest. The bark vibrates very slightly
+      under your hand — or you imagine it. {scholar.name} pauses their writing without
+      looking at you. After a long moment the sensation fades. You feel both lighter
+      and more aware of your own weight than you did before.
+    choices:
+      - id: sit_awhile
+        label: Stay at the tree for a while in silence
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: ancient_tree_honored
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: walk_back
+        label: Walk back. You have done what you came to do.
+        consequences:
+          - type: world_fact
+            target: ancient_tree_honored
+            value: true
+        exhaustionCost: 0
+        nextNodeId: null

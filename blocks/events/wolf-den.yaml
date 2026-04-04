@@ -1,0 +1,153 @@
+id: wolf_den
+name: The Wolf Den
+tags:
+  - action
+  - exploration
+  - danger
+
+preconditions:
+  - type: world_fact
+    key: wolves_tracked
+    value: true
+
+roles:
+  - id: hunter
+    label: A Local Hunter
+    archetypeFilter:
+      - farmer
+      - soldier
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      The tracks lead you to a slope in the Ashwood, a rocky hollow half-hidden by fallen
+      timber. You find the den at dusk — and the den is not empty. A grey she-wolf lies
+      inside, three cubs pressed against her flank. She does not move toward you. She
+      watches you with yellow eyes, perfectly still. {hunter.name} is behind you, bow
+      raised. "Say the word," they say quietly.
+    choices:
+      - id: kill_them
+        label: Give the word — wolves near town are a threat, cubs or not
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: faction
+            target: village_folk
+            value: 2
+          - type: world_fact
+            target: wolves_killed
+            value: true
+        exhaustionCost: 2
+        nextNodeId: killed
+      - id: back_away
+        label: Signal {hunter.name} to lower the bow and back away
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{hunter.id}'
+            value: -1
+            axis: rivalry
+          - type: world_fact
+            target: wolves_spared
+            value: true
+        exhaustionCost: 1
+        nextNodeId: backed_away
+      - id: find_another_way
+        label: Back off and think — there may be a way to move them without killing
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: wolves_spared
+            value: true
+        exhaustionCost: 2
+        nextNodeId: found_another_way
+
+  killed:
+    id: killed
+    text: >-
+      {hunter.name} makes it quick. You drag the animals clear of the den and mark the
+      hollow. On the walk back, neither of you says much. The cubs were small.
+      The threat to the flocks is gone. {hunter.name} says: "You made the right call."
+      They mean it. You are not entirely sure.
+    choices:
+      - id: accept_the_necessity
+        label: Accept it. Hard things sometimes need doing.
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: feel_the_cost
+        label: Say nothing. Walk home alone.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null
+
+  backed_away:
+    id: backed_away
+    text: >-
+      {hunter.name} lowers the bow with barely concealed frustration. "Those cubs will be
+      full-sized in six months," they say. "And back at the sheep pens." You back out of
+      the hollow without looking away from the she-wolf's eyes. She does not follow.
+      For now.
+    choices:
+      - id: post_a_warning
+        label: Post a warning at the south gate about the den's location
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 1
+          - type: stat
+            target: charisma
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: trust_your_choice
+        label: Trust your instinct. You did not want blood on your hands today.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null
+
+  found_another_way:
+    id: found_another_way
+    text: >-
+      You and {hunter.name} spend the next day returning with the carcass of a deer killed
+      elsewhere, leaving a trail further into the deep Ashwood, away from the farmsteads.
+      It takes two attempts, but the she-wolf follows the food. By the third day the den
+      is empty. The sheep are safe. The wolves are alive and far from town.
+    choices:
+      - id: tell_the_shepherds
+        label: Tell the shepherds what you did so they can watch for return
+        consequences:
+          - type: faction
+            target: village_folk
+            value: 2
+          - type: stat
+            target: charisma
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: keep_it_between_you
+        label: Keep it between you and {hunter.name} — no point explaining
+        consequences:
+          - type: relationship
+            target: '{hunter.id}'
+            value: 2
+            axis: respect
+        exhaustionCost: 0
+        nextNodeId: null

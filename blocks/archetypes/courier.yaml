@@ -1,0 +1,36 @@
+id: courier
+name: Courier
+
+traits:
+  strength:
+    min: 4
+    max: 7
+  cunning:
+    min: 5
+    max: 8
+  charisma:
+    min: 4
+    max: 6
+
+skills:
+  - navigation
+  - riding
+  - endurance
+
+namingPatterns:
+  - Dash
+  - Relay
+  - Swift
+  - Pace
+
+factions:
+  - merchant_guild
+
+locations:
+  - crossroads
+  - docks
+
+activities:
+  - saddling a horse
+  - checking a route
+  - sealing a letter

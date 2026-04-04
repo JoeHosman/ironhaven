@@ -1,0 +1,36 @@
+id: innkeeper
+name: Innkeeper
+
+traits:
+  strength:
+    min: 3
+    max: 6
+  cunning:
+    min: 4
+    max: 7
+  charisma:
+    min: 6
+    max: 9
+
+skills:
+  - cooking
+  - haggling
+  - gossip
+
+namingPatterns:
+  - Berta
+  - Finn
+  - Greta
+  - Hamish
+
+factions:
+  - merchant_guild
+
+locations:
+  - inn
+  - tavern
+
+activities:
+  - wiping the counter
+  - tapping a keg
+  - greeting guests
