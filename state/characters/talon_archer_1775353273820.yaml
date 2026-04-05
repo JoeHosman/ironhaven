@@ -1,0 +1,31 @@
+id: talon_archer_1775353273820
+name: Talon
+archetypeId: archer
+traits:
+  strength: 4
+  cunning: 8
+  charisma: 6
+skills:
+  - archery
+  - scouting
+  - fletching
+locationId: ''
+factions:
+  village_folk: 2
+  merchants_guild: 2
+relationships:
+  fenwick_merchant_1775333154301:
+    tags: []
+    axes:
+      affection: 2
+  elena_blacksmith_1775336429099:
+    tags: []
+    axes:
+      trust: 3
+      respect: 1
+birthDate:
+  year: 800
+  season: spring
+  day: 1
+deathDate: null
+alive: true
