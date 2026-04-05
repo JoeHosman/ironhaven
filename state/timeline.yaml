@@ -102,3 +102,21 @@
       target: '{candidate_a.id}'
       value: 1
   summary: Talon made 4 choices.
+- id: entry_1775353661839
+  date:
+    year: 845
+    season: spring
+    day: 1
+  characterId: loam_gravedigger_1775353636852
+  eventTemplateId: election_day
+  choicesMade:
+    - browse_vendors
+    - ask_about_wax_crate
+  consequences:
+    - type: stat
+      target: cunning
+      value: 1
+    - type: stat
+      target: cunning
+      value: 1
+  summary: Loam made 2 choices.
