@@ -58,3 +58,47 @@
       target: investigating_mill
       value: true
   summary: Verse made 2 choices.
+- id: entry_1775353326976
+  date:
+    year: 845
+    season: spring
+    day: 1
+  characterId: talon_archer_1775353273820
+  eventTemplateId: election_day
+  choicesMade:
+    - help_lighting
+    - give_meal_away
+    - campaign_for_a
+    - ask_for_nothing
+  consequences:
+    - type: relationship
+      target: '{organizer.id}'
+      value: 2
+    - type: faction
+      target: village_folk
+      value: 1
+    - type: stat
+      target: charisma
+      value: 2
+    - type: faction
+      target: village_folk
+      value: 2
+    - type: stat
+      target: charisma
+      value: 1
+    - type: faction
+      target: merchants_guild
+      value: 2
+    - type: faction
+      target: village_folk
+      value: -1
+    - type: relationship
+      target: '{candidate_a.id}'
+      value: 3
+    - type: stat
+      target: charisma
+      value: 1
+    - type: relationship
+      target: '{candidate_a.id}'
+      value: 1
+  summary: Talon made 4 choices.
