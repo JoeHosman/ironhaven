@@ -1,0 +1,20 @@
+id: loam_gravedigger_1775353636852
+name: Loam
+archetypeId: gravedigger
+traits:
+  strength: 5
+  cunning: 5
+  charisma: 1
+skills:
+  - digging
+  - endurance
+  - bone-knowledge
+locationId: ''
+factions: {}
+relationships: {}
+birthDate:
+  year: 800
+  season: spring
+  day: 1
+deathDate: null
+alive: true
