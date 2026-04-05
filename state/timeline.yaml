@@ -120,3 +120,47 @@
       target: cunning
       value: 1
   summary: Loam made 2 choices.
+- id: entry_1775353914695
+  date:
+    year: 845
+    season: spring
+    day: 1
+  characterId: cadence_bard_1775353904389
+  eventTemplateId: festival_approaches
+  choicesMade:
+    - campaign_for_a
+    - ask_for_nothing
+    - help_lighting
+    - use_meal
+  consequences:
+    - type: stat
+      target: charisma
+      value: 1
+    - type: faction
+      target: merchants_guild
+      value: 2
+    - type: faction
+      target: village_folk
+      value: -1
+    - type: relationship
+      target: '{candidate_a.id}'
+      value: 3
+    - type: stat
+      target: charisma
+      value: 1
+    - type: relationship
+      target: '{candidate_a.id}'
+      value: 1
+    - type: relationship
+      target: '{organizer.id}'
+      value: 2
+    - type: faction
+      target: village_folk
+      value: 1
+    - type: stat
+      target: charisma
+      value: 1
+    - type: faction
+      target: village_folk
+      value: 1
+  summary: Cadence made 4 choices.
