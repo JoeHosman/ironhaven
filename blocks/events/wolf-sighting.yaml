@@ -23,11 +23,12 @@ nodes:
   start:
     id: start
     text: >-
-      {shepherd.name} runs into town at first light, sheep pen empty behind them. "Three of
-      them," they gasp. "Big ones, grey. They came out of the Ashwood." The flock is scattered
-      across the hillside. {hunter.name} is already checking their bow outside the tavern.
-      "I have been waiting for this," the hunter says. "They have been circling closer for
-      a month."
+      {shepherd.name} runs into town at first light, sheep pen empty behind them. "Three
+      of them," they gasp. "Big ones, grey. They came out of the Ashwood." The flock is
+      scattered across the hillside. {hunter.name} is already checking their bow outside
+      the tavern. "I have been waiting for this," the hunter says quietly. "They have been
+      circling closer for a month. Something in the wood has pushed them out." They look
+      at you. "You coming?"
     choices:
       - id: hunt_with_hunter
         label: Join {hunter.name} — go out and hunt the wolves
@@ -56,7 +57,7 @@ nodes:
         exhaustionCost: 2
         nextNodeId: tracked
       - id: warn_shepherds
-        label: Warn the other shepherds and help them secure their pens
+        label: Warn the other shepherds and help them secure their pens first
         consequences:
           - type: faction
             target: village_folk
@@ -74,13 +75,16 @@ nodes:
   went_hunting:
     id: went_hunting
     text: >-
-      You and {hunter.name} spend four hours in the Ashwood. You find two wolves at
-      midday — the third has vanished. {hunter.name} takes their shot. You move to
-      flank. When it is over, {hunter.name} crouches over the fallen animal. "Starving,"
-      they say. "Look at the ribs." You both pause with that.
+      You and {hunter.name} spend four hours in the Ashwood. The forest is wrong in a way
+      that is hard to name — too quiet in the wrong places, too loud in others. You find two
+      wolves at midday cornered against a dry creek bed. {hunter.name} takes their shot.
+      You move to flank. When it is over, {hunter.name} crouches over the fallen animal.
+      "Starving," they say. "Look at the ribs." The wolf is thin under its winter coat —
+      thin in the way of something that has been running rather than hunting. "Something
+      drove them out," {hunter.name} says. "Same thing that drove them here."
     choices:
       - id: press_on_for_third
-        label: Track down the third wolf to finish it
+        label: Track down the third wolf — finish what you started
         preconditions:
           - type: trait
             key: strength
@@ -93,26 +97,32 @@ nodes:
             target: village_folk
             value: 2
         exhaustionCost: 3
-        nextNodeId: null
-      - id: turn_back
-        label: Turn back — two is enough, and the third will not come near now
+        nextNodeId: deep_ashwood
+      - id: investigate_what_drove_them
+        label: Follow the wolves' back-trail deeper into the wood — find out what pushed them
         consequences:
           - type: stat
             target: cunning
             value: 1
-        exhaustionCost: 1
-        nextNodeId: null
+          - type: world_fact
+            target: wolves_tracked
+            value: true
+        exhaustionCost: 2
+        nextNodeId: tracked
 
   tracked:
     id: tracked
     text: >-
-      The tracks lead north, deeper into the Ashwood than you expected. They are not random
-      — the wolves are following a deliberate circuit, as though they are searching for
-      something rather than ranging for prey. You find three kill sites, all deer. At the
-      far end of the track you find a print larger than the others. A fourth wolf. Big.
+      The tracks lead north, deeper into the Ashwood than you expected. The wolves are not
+      ranging randomly — they are moving in a deliberate circuit, as though searching for
+      something rather than hunting. You find three kill sites, all deer. At the far end
+      of the track, you find a print larger than the others. A fourth wolf. Exceptionally
+      large. And beyond that print: the tracks stop. Not because the wolf doubled back. The
+      ground ahead is bare — a wide, irregular patch where nothing grows. Not burned. Just
+      bare. The soil looks pressed. Ancient. You feel watched.
     choices:
       - id: mark_and_report
-        label: Mark the territory on your mental map and report back to the town
+        label: Mark the territory and turn back — report to the town
         consequences:
           - type: stat
             target: cunning
@@ -124,9 +134,9 @@ nodes:
             target: wolf_territory_mapped
             value: true
         exhaustionCost: 1
-        nextNodeId: null
+        nextNodeId: return_and_report
       - id: follow_the_big_track
-        label: Follow the larger track further — you want to know what you are dealing with
+        label: Follow the larger track further — you want to see this yourself
         consequences:
           - type: stat
             target: cunning
@@ -135,33 +145,163 @@ nodes:
             target: wolf_den_suspected
             value: true
         exhaustionCost: 3
-        nextNodeId: null
+        nextNodeId: deep_ashwood
 
   warned:
     id: warned
     text: >-
-      You spend the morning going door to door among the farmsteads. Most are grateful.
-      Two ignore you. By evening the pens are tighter and people are keeping their
-      dogs close. {shepherd.name} finds you at the end of the day. "My flock is
-      accounted for," they say. "Every one of them. Thank you."
+      You spend the morning going door to door. Most are grateful. Two ignore you.
+      By afternoon the pens are tighter and people are keeping their dogs close.
+      {shepherd.name} finds you at day's end. "My flock is accounted for. Every one."
+      Then they drop their voice. "Marren's boy was out in the north pasture this morning.
+      He saw the wolves pass. He says there were not three. He says there were six. And
+      something with them — he does not have words for it. He is eleven. He said it
+      walked upright."
     choices:
-      - id: accept_thanks
-        label: Accept the thanks simply and go home
-        consequences:
-          - type: relationship
-            target: '{shepherd.id}'
-            value: 1
-            axis: affection
-        exhaustionCost: 0
-        nextNodeId: null
-      - id: ask_about_the_wolves
-        label: Ask if {shepherd.name} has seen wolves before around here
+      - id: go_to_marren_boy
+        label: Go talk to Marren's boy directly
         consequences:
           - type: stat
             target: cunning
             value: 1
           - type: world_fact
-            target: wolves_tracked
+            target: upright_creature_reported
             value: true
         exhaustionCost: 1
+        nextNodeId: strange_witness
+      - id: tell_hunter
+        label: Find {hunter.name} and tell them what you heard
+        consequences:
+          - type: relationship
+            target: '{hunter.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: upright_creature_reported
+            value: true
+        exhaustionCost: 1
+        nextNodeId: strange_witness
+
+  strange_witness:
+    id: strange_witness
+    text: >-
+      The boy is steady for eleven — not prone to invention. He describes it clearly:
+      taller than a man, moving at the edge of the wolf pack, not chasing them and not
+      fleeing with them. Accompanying them. He watched until it turned and looked directly
+      at him — from too far away, he says, to have seen his face. Then it turned back and
+      continued north, and the wolves went with it. He went home. He did not tell his
+      father. "It did not feel like a monster," the boy says. "It felt like it was
+      going somewhere."
+    choices:
+      - id: go_into_deep_wood
+        label: Go into the Ashwood and follow the direction the boy indicated
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: investigating_deep_ashwood
+            value: true
+        exhaustionCost: 3
+        nextNodeId: deep_ashwood
+      - id: report_and_wait
+        label: Report this to the guard and {hunter.name} — wait for a larger party
+        consequences:
+          - type: faction
+            target: town_guard
+            value: 1
+          - type: world_fact
+            target: ashwood_alert_raised
+            value: true
+        exhaustionCost: 1
+        nextNodeId: return_and_report
+
+  deep_ashwood:
+    id: deep_ashwood
+    text: >-
+      You are deep in the Ashwood when you find the place. A clearing that should not exist —
+      the trees pull back in a perfect ring. At the centre: a flat stone, smooth and very old.
+      The wolves are there. Three of them, sitting at the edge of the clearing. Not prowling.
+      Waiting. They look at you. One of them lowers its head — not an attack posture. Something
+      else. The large prints lead to the stone and stop. Whatever was here, it is not here now.
+      But it was here recently. The stone is warm to the touch.
+    choices:
+      - id: approach_wolves
+        label: Move toward the wolves slowly — they are not threatening you
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: wolf_clearing_found
+            value: true
+          - type: world_fact
+            target: made_contact_with_wolves
+            value: true
+        exhaustionCost: 2
+        nextNodeId: return_and_report
+      - id: examine_the_stone
+        label: Move to the stone and examine it while the wolves watch
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: wolf_clearing_found
+            value: true
+          - type: world_fact
+            target: ashwood_stone_examined
+            value: true
+        exhaustionCost: 2
+        nextNodeId: return_and_report
+      - id: back_away_carefully
+        label: Back out of the clearing slowly without turning your back on the wolves
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: wolf_clearing_found
+            value: true
+        exhaustionCost: 1
+        nextNodeId: return_and_report
+
+  return_and_report:
+    id: return_and_report
+    text: >-
+      You come back out of the Ashwood with dusk at your back and something changed in
+      your chest — not quite fear, not quite wonder, a third thing between them. {shepherd.name}
+      is at the edge of the pasture, waiting. {hunter.name} is somewhere in the village,
+      and will want to know what you found. What you tell them — and how much of it —
+      will shape what Ironhaven does next about the Ashwood.
+    choices:
+      - id: tell_everything
+        label: Tell {shepherd.name} and {hunter.name} everything — all of it
+        consequences:
+          - type: relationship
+            target: '{shepherd.id}'
+            value: 1
+            axis: trust
+          - type: relationship
+            target: '{hunter.id}'
+            value: 2
+            axis: trust
+          - type: faction
+            target: village_folk
+            value: 1
+          - type: world_fact
+            target: ashwood_truth_shared
+            value: true
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: partial_report
+        label: Report the wolves as handled — keep the clearing and the stone to yourself
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: ashwood_secret_kept
+            value: true
+        exhaustionCost: 0
         nextNodeId: null
