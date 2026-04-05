@@ -26,9 +26,11 @@ nodes:
   start:
     id: start
     text: >-
-      The town watch is short-staffed. {watch_captain.name} asks if you will take a shift — four
-      hours on the east wall with {watch_partner.name}. The night is clear, cold, and apparently
-      quiet. Apparently.
+      The town watch is short-staffed. {watch_captain.name} asks if you will take a shift —
+      four hours on the east wall with {watch_partner.name}. The night is clear, cold, and
+      apparently quiet. Apparently. {watch_captain.name} hands you a lantern. Their expression
+      says they are glad the watch will be staffed. It does not say they expect the night to
+      be uneventful.
     choices:
       - id: take_the_watch
         label: Agree to take the shift
@@ -54,9 +56,12 @@ nodes:
   on_the_wall:
     id: on_the_wall
     text: >-
-      The first two hours pass without event. {watch_partner.name} tells you about their childhood
-      in a city you have never visited. Then, around the third hour, you both see it: a light moving
-      in the lower fields, slow and deliberate. No lantern swings like that.
+      The first two hours pass without event. {watch_partner.name} tells you about their
+      childhood in a city you have never visited — the smell of the tanneries, a festival
+      with lanterns, an uncle who could never be trusted with money. The story is warm and
+      meandering and the cold is not so bad when someone is talking. Then, around the third
+      hour, you both see it: a light moving in the lower fields. Slow, deliberate. No lantern
+      swings like that. {watch_partner.name} stops mid-sentence.
     choices:
       - id: raise_alarm
         label: Call it in immediately — ring the watch bell
@@ -96,12 +101,28 @@ nodes:
   alarm_raised:
     id: alarm_raised
     text: >-
-      The bell wakes half the town. The guard pours out. By the time they reach the field, there is
-      nothing — just trampled grass in a rough circle. {watch_captain.name} examines the marks, says
-      nothing for a long time. "Good that you called it in," they say finally. "Good."
+      The bell wakes half the town. The guard pours out. By the time they reach the field,
+      there is nothing — just trampled grass in a rough circle, the soil disturbed at the
+      centre. {watch_captain.name} crouches and examines the marks with a lantern for a
+      long time, saying nothing. The assembled guardsmen look at each other. Finally:
+      "Good that you called it in. Good." Their tone is flat in a way that means this is
+      not the first time they have seen something like this. They do not say that, but you
+      hear it.
     choices:
+      - id: ask_captain_what_they_know
+        label: Pull {watch_captain.name} aside and ask what they have seen before
+        consequences:
+          - type: relationship
+            target: '{watch_captain.id}'
+            value: 1
+            axis: trust
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: captain_knowledge
       - id: help_search
-        label: Join the search of the surrounding area
+        label: Join the search of the surrounding area without pressing for answers
         consequences:
           - type: stat
             target: strength
@@ -110,30 +131,29 @@ nodes:
             target: town_guard
             value: 1
         exhaustionCost: 2
-        nextNodeId: null
+        nextNodeId: search_result
       - id: return_to_post
         label: Return to the wall — your watch is not finished
         consequences:
           - type: relationship
             target: '{watch_captain.id}'
             value: 2
-            axis: trust
+            axis: respect
         exhaustionCost: 1
-        nextNodeId: null
+        nextNodeId: end_of_shift
 
   into_the_dark:
     id: into_the_dark
     text: >-
-      You and {watch_partner.name} move low through the grass. The light is a hooded lantern, held
-      by a single figure who is burying something in the field. They do not hear you until you are
-      very close. When they turn, their face is familiar — someone you have seen in town.
+      You and {watch_partner.name} move low through the grass. The light is a hooded lantern
+      held by a single figure who is kneeling at the centre of the field, working with quiet
+      care. They do not hear you until you are very close. When they turn, you recognise them —
+      a face from the market, from the lane near the cooper's, from the edge of every crowd.
+      Someone who is always just there. They go still. In their hands: a small iron box. Their
+      expression is not fear. It is calculation.
     choices:
       - id: confront_figure
         label: Step forward and demand to know what they are doing
-        preconditions:
-          - type: trait
-            key: strength
-            min: 4
         consequences:
           - type: stat
             target: charisma
@@ -142,7 +162,7 @@ nodes:
             target: confronted_night_figure
             value: true
         exhaustionCost: 2
-        nextNodeId: null
+        nextNodeId: figure_confronted
       - id: observe_and_report
         label: Back away quietly and report what you saw
         consequences:
@@ -152,18 +172,34 @@ nodes:
           - type: stat
             target: cunning
             value: 1
+          - type: world_fact
+            target: night_figure_identified
+            value: true
         exhaustionCost: 1
-        nextNodeId: null
+        nextNodeId: end_of_shift
 
   watched_the_light:
     id: watched_the_light
     text: >-
-      The light moves in a slow arc, then goes out. You mark the spot mentally. In the morning, you
-      could check it in daylight when it is safer — or forget it entirely. {watch_partner.name} says
-      nothing, watching your face.
+      The light moves in a slow arc — pauses — then goes out. Not guttered, switched. You
+      mark the spot against the line of the far oak. {watch_partner.name} is very still
+      beside you. "That was a person," they say quietly. "Deliberate. Whatever they were
+      doing, they finished it." They look at you. "Do we go down?" The night has another
+      hour in it. You could check now, in the dark, or mark the spot and return at first light.
     choices:
+      - id: go_now
+        label: Go now — the trail is fresh
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: investigated_night_light
+            value: true
+        exhaustionCost: 2
+        nextNodeId: into_the_dark
       - id: check_in_morning
-        label: Mark the spot and plan to check at first light
+        label: Mark the spot carefully and go back at first light
         consequences:
           - type: stat
             target: cunning
@@ -172,12 +208,139 @@ nodes:
             target: marked_night_spot
             value: true
         exhaustionCost: 0
-        nextNodeId: null
-      - id: report_then_forget
-        label: Report it to {watch_captain.name} and let the guard handle it
+        nextNodeId: end_of_shift
+
+  figure_confronted:
+    id: figure_confronted
+    text: >-
+      The figure does not run. They stand up slowly. Their voice, when they speak, is
+      calm. "You should go back to your post," they say. "I am not going to hurt you.
+      But what I am doing here is not a matter for the watch. I will ask you to trust me
+      on that." {watch_partner.name} stands three steps back, hand near their weapon,
+      watching you decide. The iron box is tucked under the figure's arm. Their eyes
+      do not leave yours.
+    choices:
+      - id: demand_the_box
+        label: Demand they hand over the box
+        preconditions:
+          - type: trait
+            key: strength
+            min: 4
+        consequences:
+          - type: world_fact
+            target: night_box_seized
+            value: true
+          - type: stat
+            target: strength
+            value: 1
+        exhaustionCost: 2
+        nextNodeId: captain_knowledge
+      - id: let_them_go
+        label: Let them walk away — but follow at a distance to see where they go
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: night_figure_followed
+            value: true
+        exhaustionCost: 1
+        nextNodeId: captain_knowledge
+
+  captain_knowledge:
+    id: captain_knowledge
+    text: >-
+      Whatever the night produced — a seized box, a followed figure, a marked field —
+      you bring it to {watch_captain.name} at shift's end. They listen without interrupting.
+      When you finish, they are quiet for a moment. "There have been three other incidents
+      on the east approach this season," they say. "The aldermen know. They have chosen
+      not to act." A pause. "I am telling you this because you have earned it. And because
+      I may need someone outside the formal watch to look into this. Someone without a
+      uniform that can be reported."
+    choices:
+      - id: agree_to_help
+        label: Agree to look into it — unofficially
+        consequences:
+          - type: relationship
+            target: '{watch_captain.id}'
+            value: 3
+            axis: trust
+          - type: world_fact
+            target: informal_guard_agent
+            value: true
+          - type: faction
+            target: town_guard
+            value: 2
+        exhaustionCost: 1
+        nextNodeId: end_of_shift
+      - id: ask_for_time
+        label: Ask for time to think before committing
+        consequences:
+          - type: relationship
+            target: '{watch_captain.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 0
+        nextNodeId: end_of_shift
+
+  search_result:
+    id: search_result
+    text: >-
+      The search finds two things: a small chalk circle drawn in the earth at the centre
+      of the trampled area, and an object left inside it — a sealed letter, addressed in
+      a hand none of the guards recognise, to no name. Just a symbol. {watch_captain.name}
+      takes it. "Evidence," they say shortly. They look at you sidelong. "You have good
+      instincts. The watch could use more of that."
+    choices:
+      - id: offer_to_help
+        label: Say you are willing to help — officially or otherwise
+        consequences:
+          - type: relationship
+            target: '{watch_captain.id}'
+            value: 2
+            axis: trust
+          - type: faction
+            target: town_guard
+            value: 2
+          - type: world_fact
+            target: informal_guard_agent
+            value: true
+        exhaustionCost: 1
+        nextNodeId: end_of_shift
+      - id: leave_it_to_them
+        label: Leave it with the guard — that is their work, not yours
         consequences:
           - type: faction
             target: town_guard
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: end_of_shift
+
+  end_of_shift:
+    id: end_of_shift
+    text: >-
+      Dawn comes up cold and pink over the eastern hills. The watch bell rings the change.
+      {watch_partner.name} hands you back the lantern with a look that says the night
+      changed something — between you, or in the world, or both. {watch_captain.name} nods
+      from across the courtyard. You are tired in the clean way that comes from having been
+      useful. Whatever is moving under this town, you know a little more of its shape.
+    choices:
+      - id: go_sleep
+        label: Go home and sleep — you earned it
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: stay_for_debrief
+        label: Stay for the morning debrief — hear what other watches saw
+        consequences:
+          - type: faction
+            target: town_guard
+            value: 1
+          - type: stat
+            target: cunning
             value: 1
         exhaustionCost: 1
         nextNodeId: null

@@ -18,10 +18,14 @@ entryNodeId: start
 nodes:
   start:
     id: start
-    text: The market is busy today. {trader.name} calls out to you from behind a stall laden with goods.
+    text: >-
+      The market square is thick with noise and color. Cartloads of turnips, bolts of wool,
+      caged geese. {trader.name} catches your eye from behind a stall spread with an unusual
+      jumble — quality pieces mixed with outright junk, as if two estates were emptied at
+      once. "Fresh stock," they call out. "Come have a look."
     choices:
       - id: browse
-        label: Browse the wares
+        label: Browse the wares carefully
         consequences:
           - type: stat
             target: cunning
@@ -29,7 +33,7 @@ nodes:
         exhaustionCost: 1
         nextNodeId: browse_artifact
       - id: barter
-        label: Try to barter for a good deal
+        label: Try to barter for a good deal right away
         preconditions:
           - type: skill
             key: haggling
@@ -37,18 +41,21 @@ nodes:
           - type: faction
             target: merchant_guild
             value: 1
-        exhaustionCost: 2
-        nextNodeId: barter_result
+        exhaustionCost: 1
+        nextNodeId: barter_opens
 
   browse_artifact:
     id: browse_artifact
     text: >-
-      Among the trinkets, something catches your eye: a tarnished bronze compass with strange
-      markings. {trader.name} notices your interest. "Found that in a shipment from the coast.
-      No idea what the symbols mean."
+      You work slowly through the stall. Most of it is ordinary — until your hand closes
+      on a tarnished bronze compass half-buried under a fold of cloth. The markings on the
+      face are not any alphabet you recognise. When you turn it over, there is a name
+      scratched into the back: a name you know. {trader.name} watches your face. "Found
+      that in a lot from the coast," they say. "The family it came from... well. There
+      is a story, if you want it."
     choices:
-      - id: examine_artifact
-        label: Examine the curious artifact more closely
+      - id: ask_the_story
+        label: Ask {trader.name} about the family the compass came from
         consequences:
           - type: stat
             target: cunning
@@ -57,25 +64,124 @@ nodes:
             target: found_compass
             value: true
         exhaustionCost: 1
-        nextNodeId: null
-      - id: ask_rumors
-        label: Chat with {trader.name} about town rumors
+        nextNodeId: compass_story
+      - id: pocket_compass_quietly
+        label: Set it down without showing your reaction and change the subject
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: found_compass
+            value: true
+        exhaustionCost: 1
+        nextNodeId: compass_story
+
+  barter_opens:
+    id: barter_opens
+    text: >-
+      You pitch an offer on a good-quality knife in the front row. {trader.name} counters
+      without hesitation — they know prices well. But mid-negotiation, you notice their
+      eyes keep flicking toward a covered box on the back shelf. Something there they do not
+      want to sell. Or perhaps something they want to sell very much to the right buyer.
+    choices:
+      - id: ask_about_box
+        label: Point at the covered box and raise an eyebrow
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: compass_story
+      - id: press_knife_deal
+        label: Push the knife deal to a close — you came to buy, not to pry
         consequences:
           - type: faction
             target: merchant_guild
             value: 1
         exhaustionCost: 1
-        nextNodeId: null
+        nextNodeId: barter_result
+
+  compass_story:
+    id: compass_story
+    text: >-
+      {trader.name} leans across the stall, voice dropping. The lot came from a sealed
+      house on the coast road — one of three houses cleared after a family disappeared
+      last winter. No bodies found. The guild had the goods auctioned quickly, quietly.
+      "I asked around," the trader says. "Apparently the father worked for someone in this
+      town. Someone who did not want the work talked about." They let that sit.
+    choices:
+      - id: push_for_name
+        label: Ask who the father worked for
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{trader.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: trader_reveals
+      - id: buy_compass_quietly
+        label: Buy the compass without pressing further — some threads are dangerous to pull
+        consequences:
+          - type: world_fact
+            target: compass_purchased
+            value: true
+          - type: world_fact
+            target: compass_employer_unknown
+            value: true
+        exhaustionCost: 1
+        nextNodeId: decision_node
+
+  trader_reveals:
+    id: trader_reveals
+    text: >-
+      {trader.name} glances over their shoulder — a small, involuntary thing. "I should
+      not say a name in the square," they murmur. "But if you come by the back of the
+      stall at the end of market day, I will show you the ledger page I kept. It has
+      a seal on it you will recognise." Then they straighten up, voice returning to
+      its normal register. "So. The compass. Shall we say two silver?"
+    choices:
+      - id: agree_to_meeting
+        label: Agree to come back at close of market — and pay for the compass
+        consequences:
+          - type: relationship
+            target: '{trader.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: compass_purchased
+            value: true
+          - type: world_fact
+            target: meeting_arranged_with_trader
+            value: true
+        exhaustionCost: 1
+        nextNodeId: decision_node
+      - id: decline_meeting
+        label: Pay for the compass but decline the meeting — you are not ready for that trouble
+        consequences:
+          - type: world_fact
+            target: compass_purchased
+            value: true
+          - type: world_fact
+            target: compass_employer_unknown
+            value: true
+        exhaustionCost: 1
+        nextNodeId: decision_node
 
   barter_result:
     id: barter_result
     text: >-
-      You haggle back and forth. {trader.name} narrows their eyes, then breaks into a grin. "You
-      drive a hard bargain." But then they pause. "Actually, I have something else in mind — it will
-      cost you a favor, not coin."
+      You haggle back and forth until {trader.name} narrows their eyes, then breaks into
+      a reluctant grin. "You drive a hard bargain." They wrap the knife. But before you
+      leave, they pull the cloth off that back-shelf box. Inside is a bronze compass
+      with strange markings. "Tell you what," they say. "You take this too — no charge.
+      But I want something in return. Not coin. A small favour, when the time comes."
     choices:
       - id: accept_favor
-        label: Agree to the favor
+        label: Agree to the favour — you are curious enough
         consequences:
           - type: faction
             target: merchant_guild
@@ -86,13 +192,87 @@ nodes:
           - type: world_fact
             target: owes_trader_favor
             value: true
+          - type: world_fact
+            target: compass_purchased
+            value: true
         exhaustionCost: 1
-        nextNodeId: null
+        nextNodeId: decision_node
       - id: decline_favor
-        label: Decline and take the coin deal
+        label: Decline — the knife deal was enough
         consequences:
           - type: faction
             target: merchant_guild
             value: -1
+        exhaustionCost: 0
+        nextNodeId: market_end
+
+  decision_node:
+    id: decision_node
+    text: >-
+      You tuck the compass into your coat. The square churns on around you — arguments
+      over weights, a dog loose among the chickens, the smell of frying onions from
+      somewhere near the gate. You have a choice of how you spend the rest of your time
+      here. The compass sits warm and strange against your ribs.
+    choices:
+      - id: ask_others_about_family
+        label: Ask a few other stall-holders if they knew the coastal family
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: coastal_family_rumor_spread
+            value: true
+          - type: faction
+            target: village_folk
+            value: 1
         exhaustionCost: 1
+        nextNodeId: market_end
+      - id: report_to_guard
+        label: Find a guardsman and quietly mention the sealed house story
+        consequences:
+          - type: faction
+            target: town_guard
+            value: 2
+          - type: world_fact
+            target: guard_informed_of_compass
+            value: true
+        exhaustionCost: 1
+        nextNodeId: market_end
+      - id: say_nothing
+        label: Say nothing to anyone — sit with what you know
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: market_end
+
+  market_end:
+    id: market_end
+    text: >-
+      The market thins in the late afternoon. Stalls fold up, carthorses are led away,
+      children chase scraps left by the butcher. {trader.name} gives you a small nod as
+      they pack their goods — a nod that means something, though you are not yet sure what.
+      The compass is in your pocket. Whatever name is scratched into its back, you have
+      time to decide what to do about it.
+    choices:
+      - id: examine_compass_closely
+        label: Take the compass out and study the markings before you leave
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: compass_markings_studied
+            value: true
+        exhaustionCost: 0
+        nextNodeId: null
+      - id: head_home
+        label: Pocket it and head home
+        consequences:
+          - type: faction
+            target: merchant_guild
+            value: 1
+        exhaustionCost: 0
         nextNodeId: null
