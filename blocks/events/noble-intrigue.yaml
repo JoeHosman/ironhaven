@@ -1,0 +1,228 @@
+id: noble_intrigue
+name: Noble Intrigue
+tags:
+  - intrigue
+  - social
+  - danger
+
+preconditions:
+  - type: archetype
+    key: archetype
+    value: "noble,knight"
+    operator: in
+
+roles:
+  - id: faction_ally
+    label: Your Faction Ally
+    archetypeFilter:
+      - noble
+      - knight
+    factionRequirements:
+      - nobility
+  - id: rival_noble
+    label: The Rival Noble
+    archetypeFilter:
+      - noble
+    factionRequirements:
+      - nobility
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      {faction_ally.name} pulls you aside before the council session with the particular urgency
+      of someone who has just discovered that a plan they trusted has a hole in it. {rival_noble.name}
+      has been making arrangements, quiet ones, the kind that do not appear in any written record
+      until after the damage is done. A marriage negotiation, a debt called in, two votes on the
+      district council that should not be moving together. None of these are illegal. All of them
+      together add up to something that will shift power in a direction that makes your position
+      considerably less stable.
+    choices:
+      - id: ask_for_details
+        label: Ask {faction_ally.name} for everything they know before deciding anything
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{faction_ally.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: intrigue_details_gathered
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_map_of_it
+      - id: go_to_the_session
+        label: Go into the council session and observe before reacting to anything
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 4
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: council_session_observed
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_map_of_it
+      - id: approach_rival_directly
+        label: Find {rival_noble.name} before the session and speak plainly
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{rival_noble.id}'
+            value: -1
+            axis: rivalry
+          - type: world_fact
+            target: rival_confronted_early
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_map_of_it
+
+  the_map_of_it:
+    id: the_map_of_it
+    text: >-
+      The picture that assembles itself is elegant in the way that well-designed traps are
+      elegant: each piece looks harmless until you see how they fit together. {rival_noble.name}
+      is not trying to destroy you, which would be messy and create enemies. They are trying
+      to make you irrelevant, which is cleaner and harder to oppose because it does not look
+      like an attack. You have two moves before the council session closes the window: one that
+      counters directly, one that changes the board entirely.
+    choices:
+      - id: counter_move
+        label: Make the direct counter move, block one of the three arrangements before the session
+        preconditions:
+          - type: trait
+            key: charisma
+            min: 4
+        consequences:
+          - type: stat
+            target: charisma
+            value: 2
+          - type: faction
+            target: nobility
+            value: 1
+          - type: relationship
+            target: '{rival_noble.id}'
+            value: -2
+            axis: rivalry
+          - type: world_fact
+            target: intrigue_counter_made
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_session
+      - id: change_the_board
+        label: Offer {rival_noble.name} something they want more than what they are after
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: relationship
+            target: '{rival_noble.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: intrigue_redirected
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_session
+      - id: build_alliance
+        label: Use the remaining time to secure a new ally who changes the vote count
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: nobility
+            value: 2
+          - type: world_fact
+            target: new_alliance_formed
+            value: true
+        exhaustionCost: 3
+        nextNodeId: the_session
+
+  the_session:
+    id: the_session
+    text: >-
+      The council chamber has the particular atmosphere of a room where everyone knows more
+      than they are saying, which is every council chamber you have ever sat in. {rival_noble.name}
+      is composed and gracious and twice as dangerous for it. {faction_ally.name} keeps their
+      face neutral, watching you from across the room for any signal. The session moves through
+      its business and arrives, as sessions eventually do, at the moment where something
+      important will be decided, and the room shifts almost imperceptibly toward it.
+    choices:
+      - id: speak_at_the_moment
+        label: Speak at the critical moment with the full weight of your position
+        consequences:
+          - type: stat
+            target: charisma
+            value: 2
+          - type: faction
+            target: nobility
+            value: 2
+          - type: world_fact
+            target: council_speech_made
+            value: true
+        exhaustionCost: 2
+        nextNodeId: aftermath
+      - id: let_ally_speak
+        label: Signal {faction_ally.name} to take the floor instead
+        consequences:
+          - type: relationship
+            target: '{faction_ally.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: ally_spoke_for_you
+            value: true
+        exhaustionCost: 1
+        nextNodeId: aftermath
+
+  aftermath:
+    id: aftermath
+    text: >-
+      The session ends. {rival_noble.name} leaves with the particular expression of someone
+      who has played a long game and found it longer than expected. {faction_ally.name} catches
+      your eye as the room empties. What was resolved today was not resolved finally, it was
+      moved, the way pieces on a board are moved. The real game extends beyond any single
+      session. You have learned something about {rival_noble.name}'s intentions and limits,
+      and they have learned something about yours, and both of you will factor that into
+      what comes next.
+    choices:
+      - id: meet_with_ally
+        label: Meet with {faction_ally.name} tonight to plan the next sequence of moves
+        consequences:
+          - type: relationship
+            target: '{faction_ally.id}'
+            value: 2
+            axis: trust
+          - type: faction
+            target: nobility
+            value: 1
+          - type: world_fact
+            target: intrigue_next_phase_planned
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: watch_and_wait
+        label: Hold your position and see what {rival_noble.name} does next
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 3
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: intrigue_waiting_phase
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null

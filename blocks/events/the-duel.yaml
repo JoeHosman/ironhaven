@@ -1,0 +1,224 @@
+id: the_duel
+name: The Duel
+tags:
+  - action
+  - social
+  - danger
+
+preconditions:
+  - type: skill
+    key: swordsmanship
+
+roles:
+  - id: challenger
+    label: Your Challenger
+    traitRequirements:
+      strength:
+        min: 3
+  - id: second
+    label: Your Second
+    archetypeFilter:
+      - soldier
+      - knight
+      - guard
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      The challenge arrives by letter, formal and cold. {challenger.name} has named an offense,
+      a word said in company, an action witnessed, a slight that grew in the telling until it
+      required satisfaction. The phrasing is correct to the last detail, which means they have
+      done this before. {second.name} reads it over your shoulder and says nothing, which is
+      their way of taking it seriously. You have three days to respond. Accepting means a blade
+      at dawn. Declining means something else: it depends entirely on who watches you decline.
+    choices:
+      - id: accept_the_duel
+        label: Accept formally and name {second.name} as your second
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: relationship
+            target: '{second.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: duel_accepted
+            value: true
+        exhaustionCost: 1
+        nextNodeId: preparation
+      - id: seek_arbitration
+        label: Request a formal hearing instead. Let the matter be decided by word, not blade.
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: nobility
+            value: -1
+          - type: world_fact
+            target: duel_referred_to_arbitration
+            value: true
+        exhaustionCost: 1
+        nextNodeId: arbitration
+      - id: investigate_the_challenger
+        label: Before responding, find out everything about {challenger.name}'s history with duels
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 4
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: challenger_investigated
+            value: true
+        exhaustionCost: 2
+        nextNodeId: preparation
+
+  preparation:
+    id: preparation
+    text: >-
+      {second.name} works with you for two evenings, sparring in the barn behind the miller's.
+      They are honest about what they see. "You are better than average," they say, "and
+      {challenger.name} is better than you. Not by much. But in a duel, not much is everything."
+      They show you a thing with the wrist that changes the geometry of an incoming strike.
+      You work it until it feels natural, which takes longer than you have. On the morning of
+      the third day, you dress in the dark and find {second.name} already waiting.
+    choices:
+      - id: fight_to_disarm
+        label: Resolve to end the fight at first blood or disarmament, no further
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{second.id}'
+            value: 1
+            axis: respect
+          - type: world_fact
+            target: duel_fought_with_restraint
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_field
+      - id: fight_to_win
+        label: Resolve to win completely, whatever that requires
+        consequences:
+          - type: stat
+            target: strength
+            value: 2
+          - type: world_fact
+            target: duel_fought_to_win
+            value: true
+        exhaustionCost: 3
+        nextNodeId: the_field
+
+  arbitration:
+    id: arbitration
+    text: >-
+      The magistrate hears both sides in a room that smells of old wood and older disputes.
+      {challenger.name} is not pleased to be here instead of a field at dawn. They speak
+      formally and well. You speak plainly and better. The magistrate is quiet for a long time.
+      "The offense as described," they say finally, "does not rise to the level requiring
+      satisfaction by arms." {challenger.name} goes rigid. The matter is not over. But it has
+      been moved to a different kind of ground.
+    choices:
+      - id: accept_and_leave
+        label: Accept the ruling and leave without pressing the advantage
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: nobility
+            value: 1
+          - type: relationship
+            target: '{challenger.id}'
+            value: -1
+            axis: rivalry
+        exhaustionCost: 1
+        nextNodeId: aftermath
+      - id: offer_private_apology
+        label: Approach {challenger.name} afterward and offer a private word to close it
+        consequences:
+          - type: stat
+            target: charisma
+            value: 2
+          - type: relationship
+            target: '{challenger.id}'
+            value: 2
+            axis: trust
+        exhaustionCost: 2
+        nextNodeId: aftermath
+
+  the_field:
+    id: the_field
+    text: >-
+      The field is flat and the morning is gray. {second.name} confers with {challenger.name}'s
+      second for a moment, confirming the terms. Then it is just you and {challenger.name} and
+      twenty feet of damp grass. They are very still. They are not afraid. The thing the fear
+      was covering before, in the letter and the formal language, shows itself now: this is
+      personal to them in a way it is not quite personal to you, and you wonder what the offense
+      actually was before it became a duel. You raise your blade and they answer it.
+    choices:
+      - id: wait_and_read
+        label: Hold your ground and let them come to you, reading their footwork
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 3
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: duel_outcome_victory
+            value: true
+        exhaustionCost: 2
+        nextNodeId: aftermath
+      - id: press_forward
+        label: Press the aggression immediately, before they can settle
+        consequences:
+          - type: stat
+            target: strength
+            value: 2
+          - type: world_fact
+            target: duel_outcome_victory
+            value: true
+        exhaustionCost: 3
+        nextNodeId: aftermath
+
+  aftermath:
+    id: aftermath
+    text: >-
+      The matter is resolved, in one fashion or another. {second.name} walks back with you in
+      silence for a while. Whatever happened on the field or in the magistrate's room, the
+      town has watched, and will form its conclusions. Reputation is not what you say about
+      yourself but what others see when you are tested. You think about {challenger.name} and
+      what drove them to this. You think about the wrist technique {second.name} showed you,
+      which you used once, at exactly the right moment.
+    choices:
+      - id: seek_out_challenger
+        label: Find {challenger.name} later and speak without formality
+        consequences:
+          - type: relationship
+            target: '{challenger.id}'
+            value: 2
+            axis: trust
+          - type: stat
+            target: charisma
+            value: 1
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: let_it_rest
+        label: Let it rest. Some things end when they end.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null

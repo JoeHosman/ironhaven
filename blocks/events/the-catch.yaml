@@ -1,0 +1,232 @@
+id: the_catch
+name: The Catch
+tags:
+  - action
+  - danger
+  - mystery
+
+preconditions:
+  - type: archetype
+    key: archetype
+    value: fisherman
+
+roles:
+  - id: old_fisher
+    label: The Old Fisher
+    traitRequirements:
+      cunning:
+        min: 3
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      The morning starts well: clear sky, good wind, the nets coming up heavy from the first
+      cast. {old_fisher.name} works the far end of the boat without speaking, which is how they
+      prefer it and how you prefer them. Then the weather changes faster than the sky has any
+      right to. The wind backs, the chop rises, and on your third cast the net snags on
+      something that does not give. Not rock. Something that moves, slow and wrong.
+    choices:
+      - id: haul_it_in
+        label: Pull hard and see what is in the net
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: strange_catch_hauled
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_net
+      - id: cut_the_net
+        label: Cut the net before the boat capsizes, the net is replaceable
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: net_cut_in_storm
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_storm
+      - id: ask_old_fisher
+        label: Call to {old_fisher.name} and ask if they have seen this before
+        consequences:
+          - type: relationship
+            target: '{old_fisher.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: fisher_knows
+
+  the_net:
+    id: the_net
+    text: >-
+      The net comes up with three hundred pounds of ordinary fish and one thing that is not
+      ordinary. It is pale and long and the rain makes it hard to see clearly. {old_fisher.name}
+      has gone very still at the far end of the boat. The thing in the net is not moving. It
+      has a shape that your mind keeps trying to rearrange into something familiar. The storm
+      is getting worse and you need to make a decision about it now.
+    choices:
+      - id: examine_it
+        label: Kneel down and get a proper look at what you have caught
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: strange_catch_examined
+            value: true
+        exhaustionCost: 2
+        nextNodeId: what_it_is
+      - id: throw_it_back
+        label: Get it out of the net and back into the water before anything worse happens
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: strange_catch_released
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_storm
+
+  the_storm:
+    id: the_storm
+    text: >-
+      The storm hits properly then, a wall of rain that turns the world to gray. The boat rides
+      it out because you know this water and {old_fisher.name} has forgotten more about bad
+      weather than most people ever learn. When it passes, the sky is washed clean and the
+      water is flat and very still. Something about the stillness is not natural. You row for
+      shore without discussing it.
+    choices:
+      - id: report_the_weather
+        label: Report the strange storm to the harbormaster when you dock
+        consequences:
+          - type: faction
+            target: town_guard
+            value: 1
+          - type: world_fact
+            target: storm_reported
+            value: true
+        exhaustionCost: 1
+        nextNodeId: rival_at_dock
+      - id: say_nothing
+        label: Say nothing, chalk it up to a hard morning, and go home
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: rival_at_dock
+
+  fisher_knows:
+    id: fisher_knows
+    text: >-
+      {old_fisher.name} comes forward and looks at the net without touching it. Their face
+      closes down into something careful and old. "Cut it," they say. Then, lower: "There are
+      things in the deep water that are not fish. Not anymore. Maybe never were. The old families
+      know not to pull certain lines past a certain depth after certain storms." They look at
+      you steadily. "Your choice. But I have seen what happens when someone insists on looking."
+    choices:
+      - id: cut_on_advice
+        label: Take their advice and cut the net without looking
+        consequences:
+          - type: relationship
+            target: '{old_fisher.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: net_cut_on_advice
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_storm
+      - id: look_anyway
+        label: Look anyway. You need to know.
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 4
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{old_fisher.id}'
+            value: -1
+            axis: trust
+          - type: world_fact
+            target: strange_catch_examined
+            value: true
+        exhaustionCost: 2
+        nextNodeId: what_it_is
+
+  what_it_is:
+    id: what_it_is
+    text: >-
+      You get close enough to see it clearly and then you sit back on your heels and say
+      nothing for a long moment. It looks like it was once a person. Or something that was
+      becoming a person, or unbecoming one. The features are almost right but arranged in an
+      order that makes your eyes slide away. {old_fisher.name} is staring at the horizon.
+      "Now you know," they say quietly. "The question is what you do with knowing."
+    choices:
+      - id: bring_it_to_town
+        label: Bring it back to shore, someone should examine this properly
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: strange_catch_brought_to_town
+            value: true
+          - type: faction
+            target: scholars
+            value: 2
+        exhaustionCost: 2
+        nextNodeId: rival_at_dock
+      - id: release_with_ritual
+        label: Release it back with a prayer, letting the water keep its own
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: world_fact
+            target: strange_catch_released
+            value: true
+          - type: relationship
+            target: '{old_fisher.id}'
+            value: 2
+            axis: respect
+        exhaustionCost: 1
+        nextNodeId: rival_at_dock
+
+  rival_at_dock:
+    id: rival_at_dock
+    text: >-
+      At the dock, there is a fisherman from the next village who has been taking your best
+      water for two seasons. They look at your reduced haul with a smile you have memorized.
+      "Hard morning?" They do not know what kind of morning it was. You decide, looking at them,
+      that the water today contains more than either of you understands, and the argument
+      about fishing rights suddenly seems small against that.
+    choices:
+      - id: confront_rival
+        label: Address the poaching directly. This has gone on long enough.
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: world_fact
+            target: fishing_rights_confronted
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: let_it_go_today
+        label: Let it go. You have bigger things on your mind.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null

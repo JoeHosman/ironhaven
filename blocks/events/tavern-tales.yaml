@@ -1,0 +1,199 @@
+id: tavern_tales
+name: Tavern Tales
+tags:
+  - social
+  - mystery
+  - intrigue
+
+preconditions:
+  - type: archetype
+    key: archetype
+    value: "bard,innkeeper"
+    operator: in
+
+roles:
+  - id: traveling_merchant
+    label: A Traveling Merchant
+    archetypeFilter:
+      - merchant
+  - id: old_veteran
+    label: An Old Veteran
+    archetypeFilter:
+      - soldier
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      The common room is unusually full for a Thursday, a dozen strangers passing through,
+      regulars who came for the warmth, and the particular electric atmosphere of a crowd that
+      has been drinking long enough to want stories. Someone starts it, the way someone always
+      starts it, with a tale about a giant fish or a haunted road. Then the room looks to you.
+      {traveling_merchant.name} is at the back corner, and {old_veteran.name} is by the fire,
+      and both of them are watching with the attentiveness of people who know something.
+    choices:
+      - id: tell_a_familiar_story
+        label: Tell a crowd-pleaser, something you know works, warm and safe
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: merchants
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: the_room_shifts
+      - id: tell_something_true
+        label: Tell something that actually happened, one of the stories you do not usually tell
+        preconditions:
+          - type: trait
+            key: charisma
+            min: 4
+        consequences:
+          - type: stat
+            target: charisma
+            value: 2
+          - type: world_fact
+            target: bard_told_true_story
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_room_shifts
+      - id: invite_others
+        label: Turn the floor over to the room, invite the strangers to tell what they have seen
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: room_storytelling_opened
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_room_shifts
+
+  the_room_shifts:
+    id: the_room_shifts
+    text: >-
+      The night takes on a different quality after the first story lands. People fill in around
+      it, adding their own, and the room becomes something greater than any individual account.
+      {traveling_merchant.name} tells a story about a road to the east where the milestone markers
+      are in a language nobody recognizes. {old_veteran.name} says nothing for a long time, then
+      speaks a single sentence about a winter campaign that shuts the room up completely. The fire
+      pops. Into that silence, a stranger in the corner says: "I was there. At the end of it."
+    choices:
+      - id: press_the_stranger
+        label: Draw the stranger out, professionally, with the skill of someone who knows how
+        preconditions:
+          - type: trait
+            key: charisma
+            min: 3
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: strangers_story_revealed
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_secret_told
+      - id: let_them_speak
+        label: Say nothing. Give the room space and let the stranger decide.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: strangers_story_offered
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_secret_told
+      - id: redirect
+        label: Redirect the room before it goes somewhere darker, steer back to safety
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: merchants
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: aftermath
+
+  the_secret_told:
+    id: the_secret_told
+    text: >-
+      The stranger's story takes twenty minutes and leaves the room silent when it ends. You
+      have been telling stories long enough to know when a thing is true, and this is true.
+      It involves a name that several people in the room recognize, a sequence of events that
+      explains something that has been unexplained for years, and a conclusion that makes two
+      of the regulars exchange a long look. {old_veteran.name} stares at the fire. {traveling_merchant.name}
+      is very carefully not looking at you, which is its own kind of look.
+    choices:
+      - id: remember_every_word
+        label: Commit the story to memory with professional discipline
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: secret_story_remembered
+            value: true
+        exhaustionCost: 1
+        nextNodeId: aftermath
+      - id: speak_to_stranger_after
+        label: Find the stranger before they leave and ask them to tell it again, privately
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: world_fact
+            target: secret_story_recorded
+            value: true
+        exhaustionCost: 2
+        nextNodeId: aftermath
+
+  aftermath:
+    id: aftermath
+    text: >-
+      The last guests drift out or stumble to their rooms. {traveling_merchant.name} catches
+      your eye on the way past and drops a coin on the bar, more than the tab required. {old_veteran.name}
+      is the last to leave, and at the door they pause. "You run a good room," they say.
+      It is not quite a compliment about the ale. Stories move through places like this the way
+      water moves through stone, slowly, and then all at once. You bank the fire and sit for
+      a moment in the quiet and think about what was said tonight, and what it meant, and what
+      you are going to do with it.
+    choices:
+      - id: write_it_down
+        label: Write down everything notable from the evening before you sleep
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: tavern_intelligence_recorded
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: share_with_someone
+        label: Pass on the most important thing you heard to someone who needs to know it
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: town_guard
+            value: 1
+          - type: world_fact
+            target: tavern_intelligence_shared
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: sleep_on_it
+        label: Sleep on it. Some stories need time before they show you what they mean.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: null

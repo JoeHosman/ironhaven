@@ -1,0 +1,228 @@
+id: the_masters_test
+name: The Master's Test
+tags:
+  - crafting
+  - social
+  - challenge
+
+preconditions:
+  - type: archetype
+    key: archetype
+    value: "blacksmith,carpenter,mason,tanner,weaver,baker,brewer"
+    operator: in
+
+roles:
+  - id: guild_master
+    label: The Guild Master
+    traitRequirements:
+      cunning:
+        min: 3
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      {guild_master.name} arrives at your workshop without announcement. They set a sealed
+      letter on your bench, the guild's wax pressed into the fold. Inside: a formal challenge
+      from the master craftspeople of the district. You have until sundown to produce a
+      piece that demonstrates mastery. The materials provided are good. The judges are not
+      known for kindness. {guild_master.name} watches your face. "You have been ready for this
+      for some time," they say. "The question is whether you know it."
+    choices:
+      - id: accept_with_confidence
+        label: Accept immediately you have been waiting for this
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: relationship
+            target: '{guild_master.id}'
+            value: 2
+            axis: respect
+          - type: world_fact
+            target: masters_test_accepted
+            value: true
+        exhaustionCost: 1
+        nextNodeId: prepare
+      - id: ask_for_details
+        label: Ask what the judges will be looking for before committing
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{guild_master.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: masters_test_accepted
+            value: true
+        exhaustionCost: 1
+        nextNodeId: prepare
+      - id: decline
+        label: Decline the test. The guild has no claim on your timetable.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: faction
+            target: guild
+            value: -2
+          - type: relationship
+            target: '{guild_master.id}'
+            value: -2
+            axis: respect
+        exhaustionCost: 0
+        nextNodeId: null
+
+  prepare:
+    id: prepare
+    text: >-
+      You lay out your tools, running through the work ahead. The judges will want to see
+      command of technique, not just competence. A piece can be technically sound and still
+      feel dead. You know that. You have seen work that was correct in every particular and
+      meant nothing. What makes something alive is not the hand alone but the intention behind it.
+      You have hours. The choice is how to use them.
+    choices:
+      - id: work_precisely
+        label: Work slowly and precisely, prioritizing flawless execution
+        consequences:
+          - type: stat
+            target: strength
+            value: 2
+          - type: world_fact
+            target: test_approach_precise
+            value: true
+        exhaustionCost: 3
+        nextNodeId: perform
+      - id: work_boldly
+        label: Work with confidence, trusting your instincts over caution
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 4
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: test_approach_bold
+            value: true
+        exhaustionCost: 2
+        nextNodeId: perform
+      - id: study_judges
+        label: Spend an hour watching the judges assess other work before you begin
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: test_approach_studied
+            value: true
+        exhaustionCost: 2
+        nextNodeId: perform
+
+  perform:
+    id: perform
+    text: >-
+      The hours collapse into a single long breath. Your hands know the work. Your body knows
+      the weight and feel and timing of it. There are moments when you lose yourself entirely,
+      when thought stops and the piece becomes the only thing in the world. There are other
+      moments when doubt creeps in, when you see a flaw and have to decide: correct it and lose
+      time, or let it pass and hope the judges do not look closely. You make your choices. The
+      bell rings. You step back and see what you have made.
+    choices:
+      - id: present_with_pride
+        label: Carry your work to the judges without apology or qualification
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: guild
+            value: 2
+        exhaustionCost: 1
+        nextNodeId: judged
+      - id: acknowledge_the_flaw
+        label: When you present the work, name the flaw you saw and explain your reasoning
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{guild_master.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: judged
+
+  judged:
+    id: judged
+    text: >-
+      The three judges handle the work without speaking to you. They turn it over, press at the
+      joints, hold it to the light. One leans to another and says something you cannot hear.
+      {guild_master.name} stands to the side, their expression giving nothing away. Then the
+      lead judge sets it on the table and looks at you. "This demonstrates mastery," they say.
+      "With conditions." The room feels different than it did this morning.
+    choices:
+      - id: ask_the_conditions
+        label: Ask them to state the conditions plainly
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{guild_master.id}'
+            value: 1
+            axis: respect
+        exhaustionCost: 1
+        nextNodeId: aftermath
+      - id: accept_without_question
+        label: Accept the verdict as given without pressing for more
+        consequences:
+          - type: faction
+            target: guild
+            value: 1
+          - type: stat
+            target: charisma
+            value: 1
+        exhaustionCost: 0
+        nextNodeId: aftermath
+
+  aftermath:
+    id: aftermath
+    text: >-
+      The conditions are a formality. The work was good and everyone in the room knows it.
+      {guild_master.name} finds you afterwards and grips your arm. "I told them you were ready
+      two years ago," they say quietly. Walking home, tools under your arm and the guild's
+      provisional mark in your pocket, you feel something settle in you. Not pride exactly.
+      More like recognition, the sense that the work you have been doing in private has finally
+      been witnessed, and found sufficient.
+    choices:
+      - id: celebrate
+        label: Find someone to share the news with tonight
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: guild
+            value: 1
+          - type: world_fact
+            target: achieved_masters_rank
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: return_to_work
+        label: Go back to the workshop. There is more to do.
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: achieved_masters_rank
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null

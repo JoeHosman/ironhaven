@@ -1,0 +1,223 @@
+id: the_exile_road
+name: The Exile Road
+tags:
+  - social
+  - emotional
+  - survival
+
+preconditions:
+  - type: archetype
+    key: archetype
+    value: "deserter,wanderer,hermit,beggar"
+    operator: in
+
+roles:
+  - id: kind_stranger
+    label: A Kind Stranger
+    traitRequirements:
+      charisma:
+        min: 3
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      The road is wet and the weight of your pack has found every sore point on your shoulders.
+      You have been walking since before the town's bells, and the town is far enough behind
+      you now that you can stop calculating whether anyone recognized your face. The margin
+      is not yet comfortable. It may never be comfortable. You come over a rise and see a
+      farmhouse with smoke in the chimney, and {kind_stranger.name} in the yard, who looks up
+      and sees you and does not look away, which is already more than most people do.
+    choices:
+      - id: approach_openly
+        label: Walk up to the house and ask if there is work or shelter to trade for
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: world_fact
+            target: shelter_sought_openly
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_offer
+      - id: approach_cautiously
+        label: Approach at an angle, staying visible, hands open, giving them time to decide
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 3
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: shelter_sought_carefully
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_offer
+      - id: pass_by
+        label: Keep walking. You have learned not to trust the open door.
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+        exhaustionCost: 2
+        nextNodeId: the_road_beyond
+
+  the_offer:
+    id: the_offer
+    text: >-
+      {kind_stranger.name} offers a barn, a meal, no questions. The no-questions part is said
+      deliberately, which means they have looked at you and drawn conclusions, and have decided
+      the conclusions are their business and not yours to confess to. The barn is dry and the
+      meal is simple and adequate. You sit across from them and eat and try to remember the
+      last time someone did something for you without a ledger behind it. The memory is further
+      back than you expected.
+    choices:
+      - id: accept_gratefully
+        label: Accept simply and gratefully. Say thank you and mean it.
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{kind_stranger.id}'
+            value: 2
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: the_morning
+      - id: offer_work
+        label: Offer to do work in exchange, something specific and useful
+        consequences:
+          - type: stat
+            target: strength
+            value: 2
+          - type: relationship
+            target: '{kind_stranger.id}'
+            value: 1
+            axis: respect
+          - type: world_fact
+            target: labor_offered_in_trade
+            value: true
+        exhaustionCost: 3
+        nextNodeId: the_morning
+      - id: share_a_little
+        label: Accept, and offer in return a small truth about where you have been
+        consequences:
+          - type: stat
+            target: charisma
+            value: 2
+          - type: relationship
+            target: '{kind_stranger.id}'
+            value: 3
+            axis: trust
+          - type: world_fact
+            target: past_partially_shared
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_morning
+
+  the_road_beyond:
+    id: the_road_beyond
+    text: >-
+      The road continues and so do you. By midday you have found a place to rest that is not
+      a barn: a hollow at the base of an old wall, dry if not warm, hidden if not comfortable.
+      You eat what you have. You have been in worse places, and you have been in better places,
+      and the difference between the two is not always the place but what you carry into it.
+      Today you carry the memory of the farmhouse you passed and the question of what refusing
+      the open door costs you, over time.
+    choices:
+      - id: press_on
+        label: Press on. You need more distance from the last town.
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: exile_road_continues
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: turn_back
+        label: Turn back and accept the offer after all
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: world_fact
+            target: shelter_sought_late
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_offer
+
+  the_morning:
+    id: the_morning
+    text: >-
+      Morning. {kind_stranger.name} is already up, moving around the yard with the efficiency
+      of someone whose life runs on its own schedule without consulting anyone. They do not ask
+      where you are going. They hand you something for the road: food, a length of rope, a
+      direction. "The Millfield track is clear," they say. "Avoid the east checkpoint for the
+      next few days." They say it to their fence post, not to you, in the tone of someone
+      noting the weather. You understand. You shoulder your pack.
+    choices:
+      - id: ask_their_name
+        label: Ask their name before you go
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{kind_stranger.id}'
+            value: 2
+            axis: respect
+          - type: world_fact
+            target: kind_stranger_remembered
+            value: true
+        exhaustionCost: 1
+        nextNodeId: departure
+      - id: leave_something
+        label: Leave something small of value in the barn without mentioning it
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{kind_stranger.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: departure
+
+  departure:
+    id: departure
+    text: >-
+      The road opens ahead and you walk into it. Whatever drove you out here, and there are
+      mornings when the specifics have worn smooth with repetition, the road itself is neutral.
+      It does not judge. The weight on your shoulders is the same weight as yesterday, but
+      something is slightly different in how you are carrying it. There are people who will
+      offer a barn and ask nothing. You know one of them now.
+    choices:
+      - id: follow_their_advice
+        label: Take the Millfield track as advised and avoid the checkpoint
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: exile_road_continues
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: head_toward_the_town
+        label: Turn toward the nearest town. You have been out here long enough.
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: world_fact
+            target: returned_toward_town
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null

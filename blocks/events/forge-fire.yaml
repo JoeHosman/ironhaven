@@ -1,0 +1,232 @@
+id: forge_fire
+name: Forge Fire
+tags:
+  - crafting
+  - danger
+  - challenge
+
+preconditions:
+  - type: skill
+    key: forging
+
+roles:
+  - id: apprentice
+    label: Your Apprentice
+    archetypeFilter:
+      - blacksmith
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      The bellows fail on the worst possible morning. You have a commission due at noon, a
+      blade half-shaped, the iron cooling wrong while {apprentice.name} stares at the cracked
+      tuyere with the particular look of someone who does not want to be the one to say how bad
+      it is. The clay has split. The air feed is compromised. You can still work, but only
+      poorly, and the customer is already in town waiting.
+    choices:
+      - id: emergency_repair
+        label: Attempt an emergency clay repair before touching the commission
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: forge_repaired_before_work
+            value: true
+        exhaustionCost: 3
+        nextNodeId: repair_attempt
+      - id: work_with_compromise
+        label: Work with the damaged forge, accepting the quality hit
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: forged_on_damaged_hearth
+            value: true
+        exhaustionCost: 2
+        nextNodeId: compromised_work
+      - id: send_apprentice_for_help
+        label: Send {apprentice.name} to find the town's second smith for a lending of their fire
+        consequences:
+          - type: relationship
+            target: '{apprentice.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: borrowed_forge_for_commission
+            value: true
+        exhaustionCost: 1
+        nextNodeId: borrowed_fire
+
+  repair_attempt:
+    id: repair_attempt
+    text: >-
+      You and {apprentice.name} pack the crack with grog clay and pray to whatever gods look
+      after stubborn metalwork. The repair holds for about twenty minutes before you see the
+      hairline return, traveling out from the old fracture. It is not good. It is better than
+      nothing. You can feel the heat distribution shifting around the weak point with every
+      stroke of the bellows. You have maybe two hours before it fails completely.
+    choices:
+      - id: race_the_repair
+        label: Work fast and finish the commission before the clay gives out
+        preconditions:
+          - type: trait
+            key: strength
+            min: 4
+        consequences:
+          - type: stat
+            target: strength
+            value: 2
+          - type: world_fact
+            target: commission_completed_under_pressure
+            value: true
+        exhaustionCost: 3
+        nextNodeId: finished_work
+      - id: simplify_the_piece
+        label: Simplify the design mid-work to reduce the time needed at heat
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: commission_design_compromised
+            value: true
+        exhaustionCost: 2
+        nextNodeId: finished_work
+
+  compromised_work:
+    id: compromised_work
+    text: >-
+      The iron is not getting hot enough. You can feel it in the way the hammer rebounds, in
+      the color of the metal, in the sluggish way the edge refuses to take shape. {apprentice.name}
+      watches you work with an expression that is trying hard to be encouraging. You have done
+      harder work than this in worse conditions, and you have learned to tell yourself that
+      character is built in the gap between ideal and actual. The blade that emerges is sound.
+      It is not beautiful.
+    choices:
+      - id: deliver_with_explanation
+        label: Deliver the piece and explain the forge failure honestly
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: world_fact
+            target: commission_delivered_honestly
+            value: true
+        exhaustionCost: 1
+        nextNodeId: customer_reaction
+      - id: rework_later
+        label: Tell the customer there is a short delay and rework it on a borrowed fire
+        consequences:
+          - type: faction
+            target: merchants
+            value: -1
+          - type: world_fact
+            target: commission_delayed_for_quality
+            value: true
+        exhaustionCost: 2
+        nextNodeId: customer_reaction
+
+  borrowed_fire:
+    id: borrowed_fire
+    text: >-
+      {apprentice.name} returns with word from the other smith: you can use their forge for
+      two hours this afternoon, for a favor owed. You carry your materials across town, setting
+      up at an unfamiliar hearth with tools that do not quite fit your hand. The other smith's
+      apprentice watches you with undisguised curiosity. Working in someone else's space
+      reminds you how much of your craft lives in the particular knowledge of your own fire.
+      But the heat is good, clean and even, and the iron responds honestly.
+    choices:
+      - id: work_humbly
+        label: Focus on the work, grateful for the help, and repay the favor properly
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: guild
+            value: 1
+          - type: world_fact
+            target: owes_smith_favor
+            value: true
+        exhaustionCost: 2
+        nextNodeId: finished_work
+      - id: work_to_impress
+        label: Use the audience to demonstrate your technique and build your reputation
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: faction
+            target: guild
+            value: 2
+        exhaustionCost: 2
+        nextNodeId: finished_work
+
+  finished_work:
+    id: finished_work
+    text: >-
+      The piece is done. Whatever the circumstances of its making, it is done. You hold it and
+      find it acceptable, which is its own kind of relief. A smith's standard is not what it
+      should have been but what it is, and this one meets the mark, just. You will need to
+      rebuild the tuyere properly before tomorrow's work. {apprentice.name} is already
+      gathering the materials.
+    choices:
+      - id: deliver_and_come_back
+        label: Deliver immediately, then return to repair the forge properly
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: forge_needs_repair
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: teach_the_lesson
+        label: Walk {apprentice.name} through what went wrong and how to prevent it
+        consequences:
+          - type: relationship
+            target: '{apprentice.id}'
+            value: 2
+            axis: trust
+          - type: stat
+            target: cunning
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null
+
+  customer_reaction:
+    id: customer_reaction
+    text: >-
+      The customer examines the piece closely, running a thumb along the edge. They are not
+      happy, but they are not furious. "It will do," they say finally. "This time." The last
+      two words carry weight. You know that reputation is built slowly and lost fast. Today
+      cost you something small. How you respond to that will determine whether it stays small.
+    choices:
+      - id: offer_discount
+        label: Offer a partial discount as an acknowledgment of the quality
+        consequences:
+          - type: faction
+            target: merchants
+            value: 2
+          - type: stat
+            target: charisma
+            value: 1
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: hold_your_standard
+        label: Stand by your price. The piece meets the terms agreed.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: customer_unsatisfied
+            value: true
+        exhaustionCost: 0
+        nextNodeId: null

@@ -1,0 +1,222 @@
+id: the_recipe
+name: The Recipe
+tags:
+  - crafting
+  - social
+  - intrigue
+
+preconditions:
+  - type: archetype
+    key: archetype
+    value: "baker,brewer"
+    operator: in
+
+roles:
+  - id: old_rival
+    label: Your Old Rival
+    archetypeFilter:
+      - baker
+      - brewer
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      Someone has been in your workroom. You can tell by the way the flour sacks are placed,
+      by the smell of a stranger in a space that is all yours. Nothing is missing but you
+      notice the book on the high shelf has been moved. The book with your grandmother's recipe
+      inside it, the one you have never shared, the one that makes your work unmistakably yours.
+      You know from the footprint near the window that it was someone who has been in kitchens,
+      someone who knew what they were looking for.
+    choices:
+      - id: check_the_book
+        label: Check whether the recipe page has been copied
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: recipe_theft_investigated
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_investigation
+      - id: confront_rival
+        label: Go directly to {old_rival.name} you have suspected them for months
+        consequences:
+          - type: relationship
+            target: '{old_rival.id}'
+            value: -2
+            axis: rivalry
+          - type: world_fact
+            target: rival_confronted_over_recipe
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_confrontation
+      - id: set_a_trap
+        label: Say nothing, alter the recipe in the book, and wait to see whose work changes
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 4
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: recipe_trap_set
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_trap
+
+  the_investigation:
+    id: the_investigation
+    text: >-
+      The recipe page has been handled, you can see a faint impression from pressing fingers
+      at the corner. Whether it was memorized or copied you cannot be certain. The window
+      latch has been worked from outside, recently. You ask at the baker's stall two streets
+      over and the woman there remembers seeing {old_rival.name} pass your lane yesterday
+      evening, lingering by the side alley. She offers the information with the cheerful
+      neutrality of someone who enjoys the drama but does not want to be named.
+    choices:
+      - id: bring_evidence
+        label: Take this to the guild and let them arbitrate
+        consequences:
+          - type: faction
+            target: guild
+            value: 1
+          - type: world_fact
+            target: recipe_dispute_to_guild
+            value: true
+        exhaustionCost: 2
+        nextNodeId: resolution
+      - id: confront_now
+        label: Confront {old_rival.name} directly with what you know
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{old_rival.id}'
+            value: -1
+            axis: rivalry
+        exhaustionCost: 2
+        nextNodeId: the_confrontation
+
+  the_confrontation:
+    id: the_confrontation
+    text: >-
+      {old_rival.name} does not deny being near your lane. They say they were taking a shortcut.
+      Their eyes say something else, a calculation running behind them. "Your grandmother's
+      recipe," they say, and something flickers across their face. "I remember the taste of it
+      from when we were children, from her stall in the market. I wanted to know if it was as
+      good as I remembered." They pause. "It is." They are confessing without apologizing,
+      which is a very particular kind of move.
+    choices:
+      - id: demand_they_stop
+        label: Make clear that any use of that recipe will have consequences
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{old_rival.id}'
+            value: -1
+            axis: rivalry
+          - type: world_fact
+            target: recipe_theft_contested
+            value: true
+        exhaustionCost: 2
+        nextNodeId: resolution
+      - id: offer_partnership
+        label: Surprise them: offer to share the recipe on formal terms, with credit
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: relationship
+            target: '{old_rival.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: recipe_shared_on_terms
+            value: true
+        exhaustionCost: 1
+        nextNodeId: resolution
+
+  the_trap:
+    id: the_trap
+    text: >-
+      You alter three ingredients in the book version and wait. It takes five days. Then, at
+      the market, someone buys a batch from {old_rival.name} and spits it out in the square.
+      The recipe you altered would produce exactly that result. You have your proof. {old_rival.name}
+      has not seen you watching. Their expression is pure confusion, staring at their product
+      as if it has betrayed them. Which, in a sense, it has.
+    choices:
+      - id: expose_them_publicly
+        label: Walk over and say, loudly, that you know exactly what they did
+        consequences:
+          - type: stat
+            target: charisma
+            value: 2
+          - type: faction
+            target: merchants
+            value: 1
+          - type: relationship
+            target: '{old_rival.id}'
+            value: -3
+            axis: rivalry
+          - type: world_fact
+            target: rival_publicly_exposed
+            value: true
+        exhaustionCost: 2
+        nextNodeId: resolution
+      - id: approach_quietly
+        label: Take them aside privately and let them know the game is over
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{old_rival.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: rival_privately_caught
+            value: true
+        exhaustionCost: 1
+        nextNodeId: resolution
+
+  resolution:
+    id: resolution
+    text: >-
+      Whatever the outcome, the recipe is still yours. The knowledge of how to make the thing
+      your grandmother made, with the particular adjustment she discovered late in her life and
+      never wrote down anywhere but that one book, lives in your hands now as much as on that
+      page. You think about tradition, about what gets passed on and what gets protected. There
+      is a difference between holding something close and hoarding it. You are still working
+      out where that line sits.
+    choices:
+      - id: write_it_properly
+        label: Write the full recipe out in a guild ledger so it is formally yours on record
+        consequences:
+          - type: faction
+            target: guild
+            value: 2
+          - type: world_fact
+            target: recipe_formally_recorded
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: keep_it_secret
+        label: Keep the book locked, the recipe unwritten anywhere else. Let it stay rare.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: recipe_remains_secret
+            value: true
+        exhaustionCost: 0
+        nextNodeId: null

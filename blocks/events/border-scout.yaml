@@ -1,0 +1,212 @@
+id: border_scout
+name: Border Scout
+tags:
+  - action
+  - mystery
+  - danger
+
+preconditions:
+  - type: archetype
+    key: archetype
+    value: scout
+
+roles:
+  - id: commanding_officer
+    label: Your Commanding Officer
+    archetypeFilter:
+      - soldier
+      - knight
+    factionRequirements:
+      - town_guard
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      {commanding_officer.name} gives you four days and a rough boundary and tells you to
+      find out what is moving in the border country. No unit, no backup. Just you, your kit,
+      and the knowledge that if something goes wrong out there it will be several days before
+      anyone notices. The borderlands are beautiful and complicated, and they have been
+      unsettled for months in a way that nobody above your pay grade wants to name directly.
+      You leave before first light.
+    choices:
+      - id: move_fast
+        label: Cover ground quickly in the first two days, map the territory broadly
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: border_surveyed_broadly
+            value: true
+        exhaustionCost: 2
+        nextNodeId: first_discovery
+      - id: move_slow
+        label: Move slowly and carefully, prioritizing concealment over distance
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 3
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: border_surveyed_carefully
+            value: true
+        exhaustionCost: 2
+        nextNodeId: first_discovery
+
+  first_discovery:
+    id: first_discovery
+    text: >-
+      By the end of the second day you have found three things worth reporting. Tracks that
+      suggest a group of twenty or more passed through six days ago, heading north. A farmstead
+      that has been abandoned in a hurry, food still on the table. And, most troubling, a stretch
+      of the border stream where the water has changed color, running faintly rust-red from
+      somewhere upstream. You camp in a hollow and write your notes by small light, and you
+      have to decide what to do with the third day.
+    choices:
+      - id: follow_the_tracks
+        label: Follow the tracks north and see where they lead
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: border_tracks_followed
+            value: true
+        exhaustionCost: 3
+        nextNodeId: what_is_north
+      - id: follow_the_water
+        label: Follow the stream upstream to find the source of the color change
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: border_stream_investigated
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_stream_source
+      - id: return_early
+        label: Return now with what you have, this is already significant
+        consequences:
+          - type: faction
+            target: town_guard
+            value: 1
+          - type: relationship
+            target: '{commanding_officer.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: border_report_partial
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_report
+
+  what_is_north:
+    id: what_is_north
+    text: >-
+      The tracks lead to a temporary camp, days cold, that held more people than you were
+      expecting. The fire rings are military-spaced. Someone trained these people, or they
+      trained themselves. In the center of the camp there is a stump that has been used as a
+      table, and on it, scratched into the wood, a map of the road approaches to your town.
+      They have already done their scouting. They know more about the town than the town
+      knows about them.
+    choices:
+      - id: mark_everything
+        label: Spend an hour marking every detail of the camp before leaving
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: hostile_camp_documented
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_report
+      - id: set_a_marker
+        label: Leave a subtle marker so you can confirm if the camp is used again
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 4
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: hostile_camp_marked
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_report
+
+  the_stream_source:
+    id: the_stream_source
+    text: >-
+      The source of the red water is a collapsed structure half a mile upstream, old stonework
+      that has fallen into the stream bed. The color comes from iron oxide in the old mortar.
+      It is not poisoning, or at least not intentionally. But the structure itself is interesting:
+      it is older than anything else in this area, not local construction, and the markings on
+      the intact stones match nothing you have been trained to recognize. You fill a small vial
+      of the water and take three charcoal rubbings of the marked stones.
+    choices:
+      - id: report_the_structure
+        label: Include the structure in your full report and recommend a scholar be sent
+        consequences:
+          - type: faction
+            target: scholars
+            value: 2
+          - type: world_fact
+            target: old_structure_reported
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_report
+      - id: keep_the_rubbings
+        label: Keep the rubbings for yourself and investigate the markings privately
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: old_markings_being_investigated
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_report
+
+  the_report:
+    id: the_report
+    text: >-
+      {commanding_officer.name} reads your report without looking up. You have been a scout
+      long enough to read the quality of someone's silence, and this is the silence of someone
+      who is not surprised but was hoping to be wrong. "Good work," they say finally. There is
+      a pause that contains more words than they are willing to say in front of the duty clerk.
+      "Come back at dusk. We will talk then, without the official record." You nod and go. You
+      have brought the truth in from the field. What is done with it is the next problem.
+    choices:
+      - id: dusk_meeting
+        label: Return at dusk and hear what they would not say in writing
+        consequences:
+          - type: relationship
+            target: '{commanding_officer.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: border_intelligence_shared
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: write_second_report
+        label: Write a second, more detailed private account and keep it safe
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: border_private_record
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null

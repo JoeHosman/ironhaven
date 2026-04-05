@@ -1,0 +1,238 @@
+id: patrol_gone_wrong
+name: Patrol Gone Wrong
+tags:
+  - action
+  - danger
+  - social
+
+preconditions:
+  - type: archetype
+    key: archetype
+    value: "soldier,guard,knight,archer,scout"
+    operator: in
+
+roles:
+  - id: patrol_partner
+    label: Your Patrol Partner
+    archetypeFilter:
+      - soldier
+      - guard
+      - archer
+  - id: village_elder
+    label: A Village Elder
+    traitRequirements:
+      charisma:
+        min: 3
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      The patrol route is routine until it is not. You and {patrol_partner.name} come around
+      the bend into the Millfield hamlet and find the square empty, which would not be strange
+      except that the cooking fires are still going and a child's toy is sitting in the middle
+      of the lane. {patrol_partner.name} has their hand on their weapon. Somewhere in one of
+      the buildings, someone is very carefully making no sound. Then {village_elder.name}
+      steps out from a doorway, hands raised, and says: "Please. You need to hear this before
+      you do anything."
+    choices:
+      - id: listen_to_elder
+        label: Lower your weapon and listen
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{village_elder.id}'
+            value: 2
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: the_situation
+      - id: secure_the_area
+        label: Signal {patrol_partner.name} to cover the perimeter before you talk
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: patrol_hamlet_secured
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_situation
+      - id: call_for_backup
+        label: Send {patrol_partner.name} back for reinforcements immediately
+        consequences:
+          - type: faction
+            target: town_guard
+            value: 1
+          - type: world_fact
+            target: patrol_backup_called
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_situation
+
+  the_situation:
+    id: the_situation
+    text: >-
+      {village_elder.name} tells it quickly. A group of armed men, eight or ten, arrived at
+      dawn demanding food stores and labor. Not bandits exactly, they had discipline. Military
+      discipline. The villagers gave what was asked and hid the children. The men left two
+      hours ago heading east, and the village is not sure they are gone for good. {village_elder.name}
+      looks at you. They have the careful face of someone who has lived through enough soldiers
+      to know the difference between the kind who help and the kind who make things worse.
+    choices:
+      - id: pursue
+        label: Pursue the group with {patrol_partner.name} right now, while the trail is fresh
+        preconditions:
+          - type: trait
+            key: strength
+            min: 4
+        consequences:
+          - type: stat
+            target: strength
+            value: 2
+          - type: world_fact
+            target: armed_group_pursued
+            value: true
+        exhaustionCost: 3
+        nextNodeId: the_ambush
+      - id: take_testimony
+        label: Stay and document what happened before anyone moves
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: faction
+            target: town_guard
+            value: 1
+          - type: world_fact
+            target: militia_testimony_recorded
+            value: true
+        exhaustionCost: 1
+        nextNodeId: hard_choice
+      - id: protect_the_village
+        label: Stay to protect the village in case they return, send word back by {patrol_partner.name}
+        consequences:
+          - type: relationship
+            target: '{village_elder.id}'
+            value: 3
+            axis: respect
+          - type: relationship
+            target: '{patrol_partner.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: patrol_stood_guard
+            value: true
+        exhaustionCost: 2
+        nextNodeId: hard_choice
+
+  the_ambush:
+    id: the_ambush
+    text: >-
+      You find the group two miles east in the tree line. They were expecting pursuit. The first
+      arrow comes from the left and you and {patrol_partner.name} have three seconds to decide
+      whether to engage or pull back. Two against ten is not a fight, it is a lesson. {patrol_partner.name}
+      meets your eyes and gives the smallest shake of their head. They are right. You note
+      positions, count figures, mark the direction of movement, and retreat fast. It costs
+      something to turn from a fight, even the right fight.
+    choices:
+      - id: full_tactical_report
+        label: Return with everything observed and give a full tactical report
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: faction
+            target: town_guard
+            value: 2
+          - type: world_fact
+            target: armed_group_located
+            value: true
+        exhaustionCost: 2
+        nextNodeId: aftermath
+      - id: mark_and_wait
+        label: Mark the position, wait hidden to observe where they go next
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: armed_group_tracked
+            value: true
+        exhaustionCost: 2
+        nextNodeId: aftermath
+
+  hard_choice:
+    id: hard_choice
+    text: >-
+      {village_elder.name} brings you into the main house and shows you what the men left
+      behind: a symbol marked on the door post. You have seen that symbol before, on a wanted
+      notice three towns back, connected to a land dispute that became something uglier than
+      a land dispute. This is not random. This village was chosen specifically. Which means
+      they will return, and what they want cannot be satisfied with food stores.
+    choices:
+      - id: arrange_evacuation
+        label: Advise {village_elder.name} to move the most vulnerable residents temporarily
+        consequences:
+          - type: relationship
+            target: '{village_elder.id}'
+            value: 2
+            axis: respect
+          - type: world_fact
+            target: hamlet_evacuation_advised
+            value: true
+        exhaustionCost: 2
+        nextNodeId: aftermath
+      - id: set_up_defense
+        label: Use the terrain to set up a defensible position with the villagers
+        preconditions:
+          - type: trait
+            key: strength
+            min: 3
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: faction
+            target: town_guard
+            value: 1
+          - type: world_fact
+            target: hamlet_defense_prepared
+            value: true
+        exhaustionCost: 3
+        nextNodeId: aftermath
+
+  aftermath:
+    id: aftermath
+    text: >-
+      You write the patrol report that evening by lamplight, and it is three times longer than
+      a normal entry. {patrol_partner.name} sits across the table reviewing their own notes.
+      Neither of you says what the other is thinking: this is the beginning of something, not
+      the end. The symbol on the door post has been copied into the official log. Someone
+      above your rank will have to decide what it means. Until then, the patrol continues.
+    choices:
+      - id: request_increased_patrols
+        label: Formally request increased patrols through the Millfield area
+        consequences:
+          - type: faction
+            target: town_guard
+            value: 2
+          - type: world_fact
+            target: patrol_increase_requested
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: investigate_the_symbol
+        label: Spend your off-hours investigating the symbol and where else it has appeared
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: symbol_being_investigated
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null

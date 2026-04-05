@@ -1,0 +1,221 @@
+id: siege_blueprints
+name: Siege Blueprints
+tags:
+  - crafting
+  - danger
+  - intrigue
+
+preconditions:
+  - type: archetype
+    key: archetype
+    value: siege-engineer
+
+roles:
+  - id: town_commander
+    label: The Town Commander
+    archetypeFilter:
+      - soldier
+      - knight
+    factionRequirements:
+      - town_guard
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      {town_commander.name} spreads the existing defense plans across the table and you see
+      immediately why you have been called. The eastern wall calculation is wrong: the angle
+      of the kill zone assumes a trebuchet range that was standard forty years ago. Modern
+      engines throw farther and hit harder, and the plans have not been updated. There is also
+      a blind spot at the river gate that a competent attacker would find in an afternoon.
+      {town_commander.name} watches your face as you read. "How bad is it?" they ask.
+    choices:
+      - id: honest_assessment
+        label: Tell them exactly how bad it is without softening it
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{town_commander.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: defense_flaws_disclosed
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_problem
+      - id: qualified_assessment
+        label: Describe the problems in terms of what can be fixed, not how exposed they are now
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: town_guard
+            value: 1
+          - type: world_fact
+            target: defense_flaws_disclosed
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_problem
+      - id: ask_about_budget
+        label: Ask what resources are available before saying what you can do
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 3
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: defense_budget_known
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_problem
+
+  the_problem:
+    id: the_problem
+    text: >-
+      The budget is a quarter of what the work actually requires. The materials for the eastern
+      wall correction alone would take two thirds of it. The river gate blind spot could be
+      addressed cheaply with a repositioned watchtower, but the ground there is soft and the
+      tower would need deep foundations. You lay out three possible approaches: do the cheap
+      fixes and hope, do the critical fix only and leave the rest, or do it right and find
+      the funding elsewhere. {town_commander.name} has the face of someone who has been
+      making choices like this for decades.
+    choices:
+      - id: recommend_critical_only
+        label: Recommend fixing only the most critical flaw with the available budget
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: defense_critical_fix_planned
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_tradeoff
+      - id: seek_additional_funding
+        label: Offer to present the case to the council yourself for additional funding
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: town_guard
+            value: 1
+          - type: world_fact
+            target: defense_funding_sought
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_tradeoff
+      - id: improvised_solutions
+        label: Propose unconventional solutions that stretch the budget further
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 4
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: defense_improvised_plan
+            value: true
+        exhaustionCost: 3
+        nextNodeId: the_tradeoff
+
+  the_tradeoff:
+    id: the_tradeoff
+    text: >-
+      Midway through the revised plans, {town_commander.name} says something unexpected. "There
+      is a faction on the council that believes the threat assessment has been exaggerated. They
+      would rather the money go to the granary." They say it carefully, which means they are not
+      telling you this as gossip. They are telling you because the blueprints you are drawing
+      may never be built, and they want you to know that before you invest further. You stop
+      with your pen on the paper and think about what you are actually being asked to do here.
+    choices:
+      - id: continue_regardless
+        label: Continue the work. If the plans are not used now, they will be when the time comes.
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: relationship
+            target: '{town_commander.id}'
+            value: 2
+            axis: respect
+          - type: world_fact
+            target: defense_plans_completed
+            value: true
+        exhaustionCost: 2
+        nextNodeId: aftermath
+      - id: design_for_politics
+        label: Redesign the plan to be staged and gradual, so it can survive council opposition
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: defense_plan_staged
+            value: true
+        exhaustionCost: 2
+        nextNodeId: aftermath
+      - id: speak_to_council
+        label: Ask to present the plans directly to the council and argue for them yourself
+        consequences:
+          - type: stat
+            target: charisma
+            value: 2
+          - type: faction
+            target: town_guard
+            value: 2
+          - type: world_fact
+            target: defense_case_made_to_council
+            value: true
+        exhaustionCost: 2
+        nextNodeId: aftermath
+
+  aftermath:
+    id: aftermath
+    text: >-
+      The blueprints are rolled and sealed. Whether they become stone and timber is not entirely
+      in your hands. What is in your hands is the quality of the calculation, the precision of
+      the angles, the honesty of the flaw assessment. An engineer's job is to know what is true
+      about force and structure and weight. What people do with that knowledge is a different kind
+      of problem. {town_commander.name} shakes your hand at the door. "I hope we never need these,"
+      they say. Their tone says they think we will.
+    choices:
+      - id: train_the_garrison
+        label: Offer to walk the garrison through the key vulnerabilities personally
+        consequences:
+          - type: faction
+            target: town_guard
+            value: 2
+          - type: relationship
+            target: '{town_commander.id}'
+            value: 1
+            axis: respect
+          - type: world_fact
+            target: garrison_defense_briefed
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: keep_a_copy
+        label: Keep a personal copy of the full plans somewhere safe
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: defense_plans_personal_copy
+            value: true
+        exhaustionCost: 0
+        nextNodeId: null

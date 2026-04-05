@@ -1,0 +1,244 @@
+id: shadows_and_whispers
+name: Shadows and Whispers
+tags:
+  - intrigue
+  - danger
+  - moral
+
+preconditions:
+  - type: archetype
+    key: archetype
+    value: "thief,smuggler"
+    operator: in
+
+roles:
+  - id: crew_leader
+    label: The Crew Leader
+    traitRequirements:
+      cunning:
+        min: 4
+  - id: crew_member
+    label: A Crew Member
+    archetypeFilter:
+      - thief
+      - smuggler
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      {crew_leader.name} finds you at the usual place and lays it out quickly. A merchant's
+      lockbox, temporarily in a warehouse on the south dock, holding a collection of documents
+      that are worth considerably more than their weight in paper. The job is three people,
+      two hours, during the dock watch change at the second bell. {crew_member.name} is
+      already in. The split is clean. {crew_leader.name} slides a key across the table. "For
+      the side door. Courtesy of someone on the inside." They wait.
+    choices:
+      - id: ask_about_the_documents
+        label: Ask what is in the documents before agreeing
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: job_details_questioned
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_details
+      - id: agree_immediately
+        label: Agree. You do not need the details to do the job.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{crew_leader.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: job_accepted_blind
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_approach
+      - id: negotiate_terms
+        label: Agree in principle but renegotiate the split first
+        preconditions:
+          - type: trait
+            key: charisma
+            min: 3
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: world_fact
+            target: job_terms_renegotiated
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_approach
+
+  the_details:
+    id: the_details
+    text: >-
+      {crew_leader.name} is quiet for a moment. Then: "Evidence. Against someone who uses their
+      position to make life complicated for people in our line of work. The merchant is a front.
+      The documents go to someone who can use them." They fold their hands. "You are not
+      stealing from an innocent. Nothing in this job is for nothing." It is probably true.
+      It is also the kind of justification that can be made to fit almost any situation, and
+      you have seen {crew_leader.name} make it fit before.
+    choices:
+      - id: accept_the_justification
+        label: Accept. The cause is good enough.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{crew_leader.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: job_accepted_knowing
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_approach
+      - id: remain_skeptical
+        label: Accept the job but hold the justification at arm's length
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 4
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: job_skeptical_acceptance
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_approach
+
+  the_approach:
+    id: the_approach
+    text: >-
+      The warehouse is where they said it would be. The key works. {crew_member.name} takes
+      the east corridor, you take the west, and {crew_leader.name} waits outside with the
+      signal. Forty minutes in, your hand is on the lockbox when you hear something that was
+      not in the plan: a voice from the floor above, two people having a conversation that
+      means someone is still in the building. The box is right here. The exit is sixty feet
+      back. The voice above goes quiet.
+    choices:
+      - id: move_now
+        label: Take the box and move fast before the voice comes looking
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: job_rushed_exit
+            value: true
+        exhaustionCost: 3
+        nextNodeId: the_complication
+      - id: wait_and_listen
+        label: Go very still and wait to see what the voice does next
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 3
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: job_waited_out
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_complication
+      - id: abort
+        label: Abort the job. An unplanned person changes everything.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{crew_leader.id}'
+            value: -1
+            axis: trust
+          - type: world_fact
+            target: job_aborted
+            value: true
+        exhaustionCost: 1
+        nextNodeId: aftermath
+
+  the_complication:
+    id: the_complication
+    text: >-
+      The voice is a night watchman who was not supposed to be there, doing a private round
+      for reasons that are none of your business. You and {crew_member.name} are in the shadow
+      of the east corner with the lockbox between you, not breathing, while the watchman
+      moves through with a lamp. He stops once and looks in your direction. The lamp does not
+      quite reach you. He moves on. The three seconds after his footsteps fade are the longest
+      three seconds of the month.
+    choices:
+      - id: exit_clean
+        label: Exit immediately now while the path is clear
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: job_completed
+            value: true
+        exhaustionCost: 2
+        nextNodeId: aftermath
+      - id: help_crew_member
+        label: Signal {crew_member.name} and cover their exit before your own
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: relationship
+            target: '{crew_member.id}'
+            value: 3
+            axis: trust
+          - type: world_fact
+            target: job_completed
+            value: true
+        exhaustionCost: 2
+        nextNodeId: aftermath
+
+  aftermath:
+    id: aftermath
+    text: >-
+      Three streets away, {crew_leader.name} counts the split with the unhurried calm of
+      someone who has been doing this long enough that the presence or absence of guards is
+      just weather. {crew_member.name} is still shaking slightly. You are not, quite, though
+      your hands know the night better than your head does. Whether the documents go where
+      they are supposed to go, whether the cause is as righteous as described, whether the
+      watchman who almost found you in the dark is someone you will cross again: these are
+      tomorrow's problems. Tonight the work is done.
+    choices:
+      - id: ask_where_documents_go
+        label: Ask {crew_leader.name} where the documents are actually going
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: document_destination_known
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: take_your_cut_and_go
+        label: Take your cut and ask no further questions tonight
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{crew_leader.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 0
+        nextNodeId: null

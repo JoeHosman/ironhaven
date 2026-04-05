@@ -1,0 +1,202 @@
+id: last_rites
+name: Last Rites
+tags:
+  - social
+  - emotional
+  - moral
+
+preconditions:
+  - type: archetype
+    key: archetype
+    value: "priest,healer,midwife"
+    operator: in
+
+roles:
+  - id: dying_person
+    label: The Dying
+    traitRequirements:
+      charisma:
+        min: 2
+  - id: family_member
+    label: A Family Member
+    traitRequirements:
+      charisma:
+        min: 2
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      {family_member.name} comes for you before dawn. They do not have to say what is happening,
+      you can read it in the set of their shoulders. {dying_person.name} has been declining for
+      two weeks and has entered the final hours. The family wants you there. You have done this
+      before, more times than you would choose to count, and you know that each one is different
+      in ways that make the accumulated experience both necessary and insufficient. You take your
+      things and follow.
+    choices:
+      - id: go_immediately
+        label: Go immediately without taking time to prepare
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{family_member.id}'
+            value: 2
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: the_room
+      - id: take_a_moment
+        label: Take five minutes first, to steady yourself
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{family_member.id}'
+            value: 1
+            axis: respect
+        exhaustionCost: 1
+        nextNodeId: the_room
+
+  the_room:
+    id: the_room
+    text: >-
+      The room is small and warm and the smell of it is familiar in the way you wish it were
+      not. {dying_person.name} is awake, which surprises you. They turn their head when you come
+      in and their eyes are very clear, clearer than they have been in weeks, the strange
+      sharpness that comes sometimes at the end. {family_member.name} stands by the wall, hands
+      clasped, watching you as if you carry something they cannot carry themselves. {dying_person.name}
+      says your name. Then they say: "I have something I need to tell someone."
+    choices:
+      - id: listen_privately
+        label: Ask {family_member.name} to wait outside so they can speak freely
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{dying_person.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: deathbed_confession_heard
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_confession
+      - id: let_family_stay
+        label: Gently suggest {family_member.name} might want to hear this too
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{family_member.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: deathbed_confession_shared
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_confession
+      - id: offer_comfort_first
+        label: Take their hand and offer comfort before asking them to speak
+        consequences:
+          - type: stat
+            target: charisma
+            value: 2
+          - type: relationship
+            target: '{dying_person.id}'
+            value: 3
+            axis: trust
+        exhaustionCost: 2
+        nextNodeId: the_confession
+
+  the_confession:
+    id: the_confession
+    text: >-
+      What {dying_person.name} tells you is not what you were expecting. It involves a wrong
+      done years ago, a choice that hurt someone who is still alive and does not know the full
+      truth of it. The telling costs them something, you can see it in their breathing, but they
+      look calmer after. {family_member.name}, if present, does not speak. The room holds the
+      weight of it. You sit with what you have been handed: a truth that belongs to the dead
+      and to the living both, and you will need to decide what to do with it.
+    choices:
+      - id: promise_silence
+        label: Promise to hold it in confidence. Let them go in peace.
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{dying_person.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: deathbed_secret_kept
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_end
+      - id: promise_to_make_right
+        label: Promise that you will find the person who was wronged and tell them
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: deathbed_wrong_to_be_righted
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_end
+      - id: ask_what_they_want
+        label: Ask them what they want you to do with it. It is their story to direct.
+        consequences:
+          - type: stat
+            target: charisma
+            value: 2
+          - type: relationship
+            target: '{dying_person.id}'
+            value: 3
+            axis: respect
+          - type: world_fact
+            target: deathbed_wishes_known
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_end
+
+  the_end:
+    id: the_end
+    text: >-
+      {dying_person.name} is gone by mid-morning, quietly. You stay with the family for an
+      hour after, and you do the things you have been trained to do, the words and the gestures
+      that do not fix anything but make a container for grief, which is what they are for.
+      {family_member.name} holds your hand at the door. "Thank you for coming." You nod. You
+      are tired in a way that sleep does not fully reach, but there is something at the bottom
+      of the tiredness that is not quite sorrow, a sense of having been present for something
+      that mattered. That does not make it easy. It makes it worth doing.
+    choices:
+      - id: sit_with_grief
+        label: Take the morning for yourself before the day's other work
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{family_member.id}'
+            value: 1
+            axis: respect
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: carry_on
+        label: Return to work. There are others who need you.
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: faction
+            target: townspeople
+            value: 1
+        exhaustionCost: 2
+        nextNodeId: null

@@ -1,0 +1,208 @@
+id: stable_crisis
+name: Stable Crisis
+tags:
+  - action
+  - danger
+  - survival
+
+preconditions:
+  - type: archetype
+    key: archetype
+    value: "stable-hand,farmer,hunter"
+    operator: in
+
+roles:
+  - id: animal_owner
+    label: The Animal Owner
+    traitRequirements:
+      charisma:
+        min: 2
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      The horse is not right. You noticed it yesterday and told yourself it was nothing, because
+      there are mornings when everything is fine and the previous day's worry looks foolish.
+      This morning it is worse. The animal is standing at the wrong angle, breathing too quickly,
+      and three others in the stall are showing early signs of the same thing. {animal_owner.name}
+      does not know yet. You have about an hour before anyone else arrives and starts asking
+      questions you do not have answers to.
+    choices:
+      - id: isolate_immediately
+        label: Isolate the sick animals before doing anything else
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: sick_animals_isolated
+            value: true
+        exhaustionCost: 2
+        nextNodeId: diagnosis
+      - id: check_the_feed
+        label: Check the feed stores before touching the animals
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 3
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: feed_investigated
+            value: true
+        exhaustionCost: 1
+        nextNodeId: diagnosis
+      - id: fetch_the_owner
+        label: Go immediately for {animal_owner.name}, this is beyond your call alone
+        consequences:
+          - type: relationship
+            target: '{animal_owner.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: owner_informed_immediately
+            value: true
+        exhaustionCost: 1
+        nextNodeId: diagnosis
+
+  diagnosis:
+    id: diagnosis
+    text: >-
+      The feed grain in the secondary storage has gone bad, contaminated with something you
+      cannot identify by smell alone, and four animals ate from it overnight. The horse you
+      noticed first is the worst. Two of the others are showing early symptoms and can probably
+      be treated if you move now. The fourth seems unaffected, or has not yet shown signs.
+      {animal_owner.name} stands in the stable door looking at you with the face of someone
+      doing fast, grim arithmetic.
+    choices:
+      - id: treat_all_four
+        label: Attempt to treat all four animals simultaneously
+        preconditions:
+          - type: trait
+            key: strength
+            min: 4
+        consequences:
+          - type: stat
+            target: strength
+            value: 2
+          - type: world_fact
+            target: all_animals_treated
+            value: true
+        exhaustionCost: 3
+        nextNodeId: the_hardest_choice
+      - id: prioritize_the_two
+        label: Focus on the two early-stage animals and stabilize what can be saved
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: two_animals_prioritized
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_hardest_choice
+      - id: fetch_the_healer
+        label: Send for the animal healer in town immediately, do not wait
+        consequences:
+          - type: faction
+            target: townspeople
+            value: 1
+          - type: world_fact
+            target: animal_healer_fetched
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_hardest_choice
+
+  the_hardest_choice:
+    id: the_hardest_choice
+    text: >-
+      The horse is not improving. {animal_owner.name} stands outside the stall and their silence
+      has the quality of someone who has lost animals before and knows exactly what this particular
+      silence means. The two early-stage animals are responding. The fourth is unclear. But the
+      first horse, the one you noticed yesterday, is past the point where treatment is the
+      question. The question now is whether you make it fast and merciful or wait and see through
+      the night.
+    choices:
+      - id: recommend_mercy
+        label: Tell {animal_owner.name} honestly what you believe and recommend mercy
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{animal_owner.id}'
+            value: 2
+            axis: respect
+          - type: world_fact
+            target: animal_mercy_recommended
+            value: true
+        exhaustionCost: 2
+        nextNodeId: aftermath
+      - id: wait_through_the_night
+        label: Offer to sit with the animal through the night and see what the morning shows
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: relationship
+            target: '{animal_owner.id}'
+            value: 3
+            axis: trust
+          - type: world_fact
+            target: animal_watched_overnight
+            value: true
+        exhaustionCost: 3
+        nextNodeId: aftermath
+      - id: let_owner_decide
+        label: Lay out both options fully and let {animal_owner.name} make the call
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{animal_owner.id}'
+            value: 2
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: aftermath
+
+  aftermath:
+    id: aftermath
+    text: >-
+      The two early-stage animals pull through. The fourth turns out to be fine, a different
+      feed batch, a near miss. The first horse's fate is whatever you and {animal_owner.name}
+      decided it would be, and you carry that. The contaminated grain is destroyed. {animal_owner.name}
+      pays you extra without saying why, which is how people say thank you when the thing that
+      went right involved something that went wrong first. You check the stalls one more time
+      before you leave, running your hand along the surviving animals' flanks.
+    choices:
+      - id: report_the_contamination
+        label: Report the grain contamination to the market authority so others are warned
+        consequences:
+          - type: faction
+            target: merchants
+            value: 1
+          - type: faction
+            target: townspeople
+            value: 1
+          - type: world_fact
+            target: contamination_reported
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: investigate_the_source
+        label: Try to trace where the bad grain came from
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: grain_source_investigated
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null

@@ -1,0 +1,202 @@
+id: the_reading
+name: The Reading
+tags:
+  - mystery
+  - social
+  - intrigue
+
+preconditions:
+  - type: archetype
+    key: archetype
+    value: fortune-teller
+
+roles:
+  - id: seeker
+    label: The Seeker
+    traitRequirements:
+      charisma:
+        min: 2
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      {seeker.name} sits across from you with the look that people bring when they have already
+      decided they want to believe. You know the look. You have learned to read the seeker
+      before you read the cards or the bones or the smoke, because the truth of a reading is
+      never purely in the symbols, it is in the meeting between symbol and person. {seeker.name}
+      sets their hands flat on the table, which means fear, held down. They say: "I need to
+      know something. I have been waiting to ask someone for a long time."
+    choices:
+      - id: ask_what_they_need
+        label: Ask them what they want to know before you begin
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{seeker.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: the_question
+      - id: begin_without_asking
+        label: Begin the reading without asking, let the symbols speak first
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 4
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: reading_begun_blind
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_vision
+      - id: read_them_first
+        label: Spend a few minutes simply observing them before touching any instrument
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: seeker_observed_carefully
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_question
+
+  the_question:
+    id: the_question
+    text: >-
+      {seeker.name} asks about someone they love, and whether that person will return. The way
+      they ask it tells you more than they realize: the past tense they use by accident, the
+      name they almost say before they stop themselves. You begin the reading, and partway
+      through something stops you. Not technique, not calculation. Something in the pattern
+      that you do not choose to see but see anyway, a thing about this person's future that
+      has a particular weight to it. You could stop here. You could give the comfortable answer.
+    choices:
+      - id: tell_the_truth
+        label: Tell them what you actually see, even the difficult part
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{seeker.id}'
+            value: -1
+            axis: trust
+          - type: world_fact
+            target: true_reading_given
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_vision
+      - id: give_comfort
+        label: Give them what they came for. The truth can wait for a better moment.
+        consequences:
+          - type: stat
+            target: charisma
+            value: 2
+          - type: relationship
+            target: '{seeker.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: comfortable_reading_given
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_vision
+      - id: ask_what_they_can_bear
+        label: Ask them gently how much truth they can hear today
+        preconditions:
+          - type: trait
+            key: charisma
+            min: 4
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: relationship
+            target: '{seeker.id}'
+            value: 2
+            axis: respect
+          - type: world_fact
+            target: reading_calibrated
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_vision
+
+  the_vision:
+    id: the_vision
+    text: >-
+      The vision, or what you call a vision because there is no better word, is brief and clear
+      and not about {seeker.name} at all. It is about you. Something coming toward this town,
+      some convergence of forces that you have been seeing at the edges of readings for months,
+      resolves briefly into something almost legible. Then it is gone. {seeker.name} is watching
+      your face. "You went somewhere," they say quietly. "What did you see?" You have to decide
+      whether what you just saw is yours to share or yours to carry alone.
+    choices:
+      - id: share_the_vision
+        label: Tell them what you saw, even though it was not about them
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{seeker.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: vision_shared
+            value: true
+        exhaustionCost: 2
+        nextNodeId: aftermath
+      - id: keep_the_vision
+        label: Deflect. Finish the reading for them and hold what you saw to yourself.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: vision_kept_private
+            value: true
+        exhaustionCost: 1
+        nextNodeId: aftermath
+
+  aftermath:
+    id: aftermath
+    text: >-
+      {seeker.name} leaves with something: hope, or truth, or the slightly dazed expression
+      of someone who came in for an answer and received instead a better question. You sit alone
+      after and think about what it means to read a future you cannot fully see, to be trusted
+      with the weight of other people's uncertainty. The vision is still with you. You turn it
+      over. Whatever is coming toward this town, it is not far away now.
+    choices:
+      - id: record_the_vision
+        label: Write down exactly what you saw while it is sharp
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: vision_recorded
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: seek_corroboration
+        label: Seek out someone else who reads signs and compare what you have been seeing
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: faction
+            target: scholars
+            value: 1
+          - type: world_fact
+            target: vision_corroboration_sought
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null

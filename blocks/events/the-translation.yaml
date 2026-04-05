@@ -1,0 +1,227 @@
+id: the_translation
+name: The Translation
+tags:
+  - mystery
+  - intrigue
+  - social
+
+preconditions:
+  - type: archetype
+    key: archetype
+    value: scholar
+
+roles:
+  - id: text_owner
+    label: The Text's Owner
+    traitRequirements:
+      cunning:
+        min: 3
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      {text_owner.name} arrives at your study with a wooden case that has been locked in a way
+      that suggests both value and anxiety. Inside is a manuscript, not a codex but a scroll,
+      old enough that the vellum has taken on a color between amber and bone. The script is not
+      a language you know immediately, but it is not entirely unfamiliar: elements of it are
+      related to a southern trade script you studied fifteen years ago, and there are logograms
+      in the margin that you recognize from a completely different tradition. {text_owner.name}
+      watches your face. "Can you read it?" They are hoping for a simple yes.
+    choices:
+      - id: accept_the_work
+        label: Accept the translation work without committing to a timeline
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{text_owner.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: translation_begun
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_first_reading
+      - id: ask_where_it_came_from
+        label: Ask where the text came from before agreeing to anything
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 3
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: text_provenance_questioned
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_first_reading
+      - id: consult_your_references
+        label: Ask to keep it overnight to compare against your references before committing
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: translation_begun
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_first_reading
+
+  the_first_reading:
+    id: the_first_reading
+    text: >-
+      The first three sections are geographical records, detailed and specific, describing
+      a route through terrain you recognize as the borderlands to the north. The fourth section
+      changes register entirely, and you stop. What you are reading is an account of an event,
+      described in careful, clinical language, that cannot be reconciled with anything you were
+      taught. Not because it is fantastical, but because it is precise, the way eyewitness
+      accounts are precise, with distances and times and the names of people who were present.
+      The names are names you recognize from other sources. This text predates those sources
+      by three centuries.
+    choices:
+      - id: continue_translating
+        label: Continue translating. You need the full text before you can understand it.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: translation_progressing
+            value: true
+        exhaustionCost: 3
+        nextNodeId: what_it_says
+      - id: verify_the_dating
+        label: Stop and verify the age of the manuscript independently before going further
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: faction
+            target: scholars
+            value: 1
+          - type: world_fact
+            target: manuscript_age_verified
+            value: true
+        exhaustionCost: 2
+        nextNodeId: what_it_says
+      - id: contact_a_colleague
+        label: Write immediately to a colleague who specializes in this period
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: faction
+            target: scholars
+            value: 2
+          - type: world_fact
+            target: colleague_contacted_about_text
+            value: true
+        exhaustionCost: 2
+        nextNodeId: what_it_says
+
+  what_it_says:
+    id: what_it_says
+    text: >-
+      The full translation takes two days. What it says changes your understanding of several
+      things you thought you understood. It also explains the strange geological feature in
+      the northern valley that three different expeditions have noted without explaining, and
+      it names a location specifically enough that, with the right instruments and the right
+      preparation, someone could find it. Someone with this translation could find it. You sit
+      back and look at {text_owner.name} across the study and realize, for the first time, that
+      you do not know who they are or why they have this text.
+    choices:
+      - id: share_the_full_translation
+        label: Give {text_owner.name} the complete translation as agreed
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{text_owner.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: translation_delivered
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_question_of_knowledge
+      - id: give_partial_translation
+        label: Give a translation that omits the specific location details
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 4
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: translation_partial_delivered
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_question_of_knowledge
+      - id: ask_their_purpose
+        label: Ask {text_owner.name} directly what they intend to do with the translation
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{text_owner.id}'
+            value: -1
+            axis: trust
+          - type: world_fact
+            target: text_purpose_questioned
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_question_of_knowledge
+
+  the_question_of_knowledge:
+    id: the_question_of_knowledge
+    text: >-
+      Knowledge that changes everything is a particular kind of weight to carry. You have
+      encountered it before, the discovery that revises context rather than just adding to it,
+      and each time it raises the same question: who has the right to know this, and who has
+      the right to decide who knows it. The scholars' guild has a protocol for such things.
+      The protocol exists because people who do not follow it have, historically, created
+      problems that outlasted them by generations.
+    choices:
+      - id: report_to_guild
+        label: Report the text to the scholars' guild and let the protocol do its work
+        consequences:
+          - type: faction
+            target: scholars
+            value: 3
+          - type: world_fact
+            target: text_reported_to_guild
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: keep_a_copy
+        label: Keep a personal copy of the full translation, and publish nothing yet
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: translation_private_copy
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: investigate_the_location
+        label: Use the translation yourself, go and see what is at the named location
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: text_location_to_be_investigated
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null

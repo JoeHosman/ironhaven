@@ -1,0 +1,220 @@
+id: deep_vein
+name: Deep Vein
+tags:
+  - mystery
+  - danger
+  - crafting
+
+preconditions:
+  - type: archetype
+    key: archetype
+    value: miner
+
+roles:
+  - id: mine_foreman
+    label: The Mine Foreman
+    archetypeFilter:
+      - miner
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      Three levels down, in a passage that was supposed to be a dead end, your pick breaks
+      through into a hollow. The sound of it echoes in a way that suggests the hollow is large.
+      {mine_foreman.name} is one tunnel over. You have your lamp, a pickaxe, and the knowledge
+      that nobody else has been this deep in years. The air coming through the gap is cold and
+      old, and it smells like stone and something else you cannot name.
+    choices:
+      - id: widen_the_gap
+        label: Widen the gap and squeeze through to see what is inside
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: deep_vein_entered
+            value: true
+        exhaustionCost: 2
+        nextNodeId: inside_the_hollow
+      - id: call_the_foreman
+        label: Call {mine_foreman.name} over before you do anything
+        consequences:
+          - type: relationship
+            target: '{mine_foreman.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: foreman_informed_of_hollow
+            value: true
+        exhaustionCost: 1
+        nextNodeId: foreman_arrives
+      - id: mark_and_report
+        label: Mark the location carefully and report it through proper channels
+        consequences:
+          - type: faction
+            target: guild
+            value: 1
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: deep_vein_reported
+            value: true
+        exhaustionCost: 1
+        nextNodeId: what_was_found
+
+  inside_the_hollow:
+    id: inside_the_hollow
+    text: >-
+      The hollow is a natural chamber, old as the mountain, and it is threaded with a vein of
+      ore unlike anything you have seen in twenty years of mining. The color is wrong, too
+      bright, not quite any metal you can name, catching your lamp in a way that ordinary ore
+      does not. There is also, in the far corner, what looks like evidence of old work, marks
+      cut by tools, not nature. Someone was here before you, a long time before you.
+    choices:
+      - id: chip_a_sample
+        label: Take a sample of the ore to show the assayer
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: strange_ore_sampled
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_old_marks
+      - id: examine_the_old_marks
+        label: Go directly to the old tool marks and study them
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: old_marks_found
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_old_marks
+
+  foreman_arrives:
+    id: foreman_arrives
+    text: >-
+      {mine_foreman.name} squeezes through the gap behind you and stands very still in the
+      lamplight. They have been in mines their entire life and they do not startle easily.
+      They are very close to startled now. They crouch by the vein and hold their lamp close.
+      "This is not in any survey," they say. "This passage is not supposed to exist." They
+      look at you. Their voice has gone careful. "Who else knows you found this today?"
+    choices:
+      - id: say_only_you
+        label: Tell them nobody else knows yet
+        consequences:
+          - type: relationship
+            target: '{mine_foreman.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: deep_vein_secret
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_old_marks
+      - id: question_the_question
+        label: Ask why that matters before answering
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 3
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{mine_foreman.id}'
+            value: -1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: the_old_marks
+
+  the_old_marks:
+    id: the_old_marks
+    text: >-
+      The marks on the rock are deliberate: uniform cuts arranged in a pattern that could be
+      structural engineering or could be something else entirely. The stone around them is
+      not chipped or damaged. Someone very skilled made these without waste. The ore vein
+      runs directly through the marked section, as if whoever worked here was following it.
+      Or guiding it. The air in this part of the chamber is different, not cold but neutral,
+      a temperature that has no season.
+    choices:
+      - id: report_everything
+        label: Take full notes and report everything to the mine owners and the scholars' guild
+        consequences:
+          - type: faction
+            target: scholars
+            value: 2
+          - type: faction
+            target: guild
+            value: 1
+          - type: world_fact
+            target: deep_vein_fully_reported
+            value: true
+        exhaustionCost: 2
+        nextNodeId: what_was_found
+      - id: keep_it_private
+        label: Keep the location private until you understand what you have found
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: deep_vein_secret
+            value: true
+        exhaustionCost: 1
+        nextNodeId: what_was_found
+      - id: begin_extracting
+        label: Begin extracting the ore. Knowledge can come later, the vein is here now.
+        preconditions:
+          - type: trait
+            key: strength
+            min: 4
+        consequences:
+          - type: stat
+            target: strength
+            value: 2
+          - type: world_fact
+            target: strange_ore_extracted
+            value: true
+        exhaustionCost: 3
+        nextNodeId: what_was_found
+
+  what_was_found:
+    id: what_was_found
+    text: >-
+      Whatever is in that chamber, you carry a piece of it back with you now: a sample in
+      your pocket, a report filed, a memory of the old marks that you will be turning over
+      in your sleep for months. The mine looks different coming back up through it. You have
+      been in these tunnels long enough to stop thinking about what might be in them. Today
+      reminded you to start thinking about that again.
+    choices:
+      - id: find_a_scholar
+        label: Seek out someone who studies old stonework and tell them what you saw
+        consequences:
+          - type: faction
+            target: scholars
+            value: 2
+          - type: world_fact
+            target: scholar_informed_of_vein
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: keep_digging
+        label: Go back tomorrow and dig deeper
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: deep_vein_being_explored
+            value: true
+        exhaustionCost: 0
+        nextNodeId: null

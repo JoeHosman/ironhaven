@@ -1,0 +1,200 @@
+id: the_apprentice
+name: The Apprentice
+tags:
+  - social
+  - crafting
+  - emotional
+
+preconditions:
+  - type: skill
+    key: medicine
+
+roles:
+  - id: apprentice_candidate
+    label: The Apprentice Candidate
+    traitRequirements:
+      cunning:
+        min: 2
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      {apprentice_candidate.name} has been following you with their eyes for three weeks,
+      watching you work from a careful distance, in the way that someone who wants something
+      builds up to asking for it. Today they finally ask. They want to learn. They are earnest
+      in the uncomplicated way of people who have not yet been trained out of earnestness, and
+      the question they ask is the right question: not "can you teach me everything" but "can
+      you show me one thing, so I know if I have any aptitude." It is a good question. You
+      think about how you were at their age.
+    choices:
+      - id: accept_immediately
+        label: Accept. Teaching is part of the work.
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{apprentice_candidate.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: apprentice_accepted
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_first_lesson
+      - id: test_them_first
+        label: Give them a small task to assess their temperament before agreeing
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 3
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: apprentice_tested
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_first_lesson
+      - id: ask_about_their_reasons
+        label: Ask them why they want to learn before deciding
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{apprentice_candidate.id}'
+            value: 1
+            axis: trust
+        exhaustionCost: 1
+        nextNodeId: the_first_lesson
+
+  the_first_lesson:
+    id: the_first_lesson
+    text: >-
+      The first lesson is always the same lesson in different clothing: this is harder and more
+      precise than it looks, and patience is not optional. {apprentice_candidate.name} listens
+      very carefully, which is the first good sign. They ask three questions during the
+      demonstration, two of which are very good and one of which is better than good, a question
+      that touches something you have been doing so long you stopped examining it. You have to
+      stop and think about the answer. That has not happened in some time.
+    choices:
+      - id: answer_the_question_fully
+        label: Work through the answer properly, even though it takes longer
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: relationship
+            target: '{apprentice_candidate.id}'
+            value: 2
+            axis: respect
+          - type: world_fact
+            target: apprentice_lesson_taught
+            value: true
+        exhaustionCost: 2
+        nextNodeId: what_they_show
+      - id: tell_them_to_watch
+        label: Tell them to watch for now and understand it by doing before asking
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: apprentice_lesson_taught
+            value: true
+        exhaustionCost: 2
+        nextNodeId: what_they_show
+
+  what_they_show:
+    id: what_they_show
+    text: >-
+      {apprentice_candidate.name} attempts the first practical task and the result is imperfect
+      in ways that tell you something specific about their hand and their attention and where
+      they will need the most work. Their grip is too tight. Their instinct when something goes
+      wrong is to correct it fast rather than assess it first. These are both things that can
+      be trained. What cannot be trained is present in what they do: they look at the patient,
+      not at the technique. That is where good healers come from, and you do not see it often.
+    choices:
+      - id: tell_them_what_you_see
+        label: Tell them directly and honestly what you observed, good and bad
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: relationship
+            target: '{apprentice_candidate.id}'
+            value: 3
+            axis: trust
+          - type: world_fact
+            target: apprentice_assessed_honestly
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_decision
+      - id: focus_on_correction
+        label: Focus the feedback on what needs to change and save the praise for later
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: apprentice_assessed_critically
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_decision
+
+  the_decision:
+    id: the_decision
+    text: >-
+      You have to decide what kind of teacher you are going to be, because that decides what
+      kind of healer they will become. The choices are not binary but they are real: you can
+      teach them safety and caution, which will make them competent. You can teach them to
+      look past the technique to the person, which will make them good. You can teach them
+      to question received knowledge, which will make them dangerous in the ways that matter.
+      These are not mutually exclusive but one of them will be the foundation and the others
+      will build on it.
+    choices:
+      - id: teach_safety_first
+        label: Build the foundation in safety and precision before anything else
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: faction
+            target: townspeople
+            value: 1
+          - type: world_fact
+            target: apprentice_taught_safety
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: teach_to_see
+        label: Teach them to see the patient first and the technique second
+        consequences:
+          - type: stat
+            target: charisma
+            value: 2
+          - type: world_fact
+            target: apprentice_taught_sight
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null
+      - id: teach_to_question
+        label: Teach them to question what they are told and find out for themselves
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 4
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: apprentice_taught_inquiry
+            value: true
+        exhaustionCost: 2
+        nextNodeId: null

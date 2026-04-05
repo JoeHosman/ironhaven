@@ -1,0 +1,234 @@
+id: the_delivery
+name: The Delivery
+tags:
+  - action
+  - intrigue
+  - danger
+
+preconditions:
+  - type: archetype
+    key: archetype
+    value: courier
+
+roles:
+  - id: sender
+    label: The Sender
+    traitRequirements:
+      cunning:
+        min: 3
+  - id: recipient
+    label: The Intended Recipient
+    traitRequirements:
+      cunning:
+        min: 2
+
+entryNodeId: start
+
+nodes:
+  start:
+    id: start
+    text: >-
+      {sender.name} presses the package into your hands at a street corner, not their house,
+      not their shop, a corner. The package is wrapped in oilcloth and sealed twice. They tell
+      you the delivery address, they tell you it needs to reach {recipient.name} by nightfall,
+      and they tell you the fee is triple your standard rate. They do not tell you what is inside.
+      A triple rate means risk. You have been a courier long enough to know that the weight of
+      a package and the weight of what a package contains are two very different things.
+    choices:
+      - id: accept_no_questions
+        label: Accept. It is not your business what is inside.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{sender.id}'
+            value: 1
+            axis: trust
+          - type: world_fact
+            target: delivery_accepted
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_route
+      - id: ask_about_contents
+        label: Ask what is in it before agreeing to anything
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: delivery_questioned
+            value: true
+        exhaustionCost: 1
+        nextNodeId: sender_reveals
+      - id: refuse
+        label: Decline. Triple rate for a street-corner handoff is not a job, it is a problem.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{sender.id}'
+            value: -2
+            axis: trust
+        exhaustionCost: 0
+        nextNodeId: null
+
+  sender_reveals:
+    id: sender_reveals
+    text: >-
+      {sender.name} looks at you for a moment, deciding. Then: "Documents. Evidence, if you
+      want to call it that. There are people who would prefer it not reach its destination."
+      They say it flat, like a weather report. "I chose you because you know this town better
+      than anyone and you do not stop to ask questions." The last sentence was not an
+      observation, it was a correction. You are asking a question. They wait to see what you
+      do with the answer.
+    choices:
+      - id: accept_informed
+        label: Accept now that you know the stakes
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{sender.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: delivery_accepted_knowing
+            value: true
+        exhaustionCost: 1
+        nextNodeId: the_route
+      - id: negotiate_protection
+        label: Accept, but negotiate for a bodyguard or a specific safe route in writing
+        consequences:
+          - type: stat
+            target: charisma
+            value: 1
+          - type: world_fact
+            target: delivery_terms_negotiated
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_route
+
+  the_route:
+    id: the_route
+    text: >-
+      Three ways to reach {recipient.name} by nightfall. The main road is fastest but visible,
+      and a courier moving quickly on the main road draws attention. The lane through the
+      tannery district is slower and ugly but it is the kind of route that people who watch
+      main roads do not watch. The rooftop path you have used twice before adds an hour but
+      gets you to the recipient's back entrance, which you know is always unlatched between
+      the afternoon bells. Each choice says something different about what you know about today.
+    choices:
+      - id: main_road
+        label: Take the main road. Speed matters more than concealment.
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: delivery_route_open
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_stop
+      - id: tannery_lane
+        label: Take the tannery lane. Slow and unglamorous and safe.
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 3
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: delivery_route_concealed
+            value: true
+        exhaustionCost: 2
+        nextNodeId: the_stop
+      - id: rooftop_path
+        label: Take the rooftop path. An extra hour but a back-door arrival.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: delivery_route_hidden
+            value: true
+        exhaustionCost: 3
+        nextNodeId: arrival
+
+  the_stop:
+    id: the_stop
+    text: >-
+      Halfway there, someone falls into step beside you. They do not grab you, they are too
+      professional for that. They simply walk alongside and say, pleasantly, that the package
+      you are carrying would be better delivered to a different address, and they name one.
+      Then they tell you what will happen if it reaches its intended destination. Their tone
+      suggests they have said this kind of thing before and it has generally worked. They are
+      not wrong that what they offer would be easier.
+    choices:
+      - id: refuse_diversion
+        label: Say no and keep walking without breaking stride
+        consequences:
+          - type: stat
+            target: strength
+            value: 1
+          - type: world_fact
+            target: delivery_diversion_refused
+            value: true
+        exhaustionCost: 2
+        nextNodeId: arrival
+      - id: take_alternate_route
+        label: Double back immediately and take the rooftop path, lose the follower
+        preconditions:
+          - type: trait
+            key: cunning
+            min: 4
+        consequences:
+          - type: stat
+            target: cunning
+            value: 2
+          - type: world_fact
+            target: delivery_follower_lost
+            value: true
+        exhaustionCost: 3
+        nextNodeId: arrival
+
+  arrival:
+    id: arrival
+    text: >-
+      {recipient.name} takes the package with both hands and holds it for a moment before
+      opening it. Whatever is inside, the look on their face when they see it is not
+      what you expected. Not relief, not triumph. Something more like recognition, the expression
+      of someone receiving confirmation of something they already knew and had hoped was wrong.
+      "Thank you," they say. They look at you properly. "Are you all right?" It is not a question
+      couriers usually get.
+    choices:
+      - id: ask_what_it_means
+        label: Ask what it is and whether you are in danger for having carried it
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: relationship
+            target: '{recipient.id}'
+            value: 2
+            axis: trust
+          - type: world_fact
+            target: delivery_contents_known
+            value: true
+        exhaustionCost: 1
+        nextNodeId: null
+      - id: professional_exit
+        label: Collect your fee and leave. You delivered it. That is the job.
+        consequences:
+          - type: stat
+            target: cunning
+            value: 1
+          - type: world_fact
+            target: delivery_completed_cleanly
+            value: true
+        exhaustionCost: 0
+        nextNodeId: null
