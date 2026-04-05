@@ -4,22 +4,31 @@ archetypeId: bard
 traits:
   strength: 2
   cunning: 5
-  charisma: 10
+  charisma: 15
 skills:
   - music
   - storytelling
   - performance
 locationId: ''
 factions:
-  merchants_guild: 2
+  merchants_guild: 6
   village_folk: 1
 relationships:
   fenwick_merchant_1775333228055:
     tags: []
     axes:
+      trust: 6
+      respect: 2
+  talon_archer_1775353273820:
+    tags: []
+    axes:
+      affection: 2
+  elena_blacksmith_1775336429099:
+    tags: []
+    axes:
       trust: 3
       respect: 1
-  talon_archer_1775353273820:
+  hilda_farmer_1775346061996:
     tags: []
     axes:
       affection: 2

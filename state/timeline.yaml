@@ -164,3 +164,77 @@
       target: village_folk
       value: 1
   summary: Cadence made 4 choices.
+- id: entry_1775354003118
+  date:
+    year: 858
+    season: winter
+    day: 18
+  characterId: cadence_bard_1775353904389
+  eventTemplateId: festival_approaches
+  choicesMade:
+    - campaign_for_a
+    - ask_for_nothing
+    - help_lighting
+    - use_meal
+  consequences:
+    - type: stat
+      target: charisma
+      value: 1
+    - type: faction
+      target: merchants_guild
+      value: 2
+    - type: faction
+      target: village_folk
+      value: -1
+    - type: relationship
+      target: '{candidate_a.id}'
+      value: 3
+    - type: stat
+      target: charisma
+      value: 1
+    - type: relationship
+      target: '{candidate_a.id}'
+      value: 1
+    - type: relationship
+      target: '{organizer.id}'
+      value: 2
+    - type: faction
+      target: village_folk
+      value: 1
+    - type: stat
+      target: charisma
+      value: 1
+    - type: faction
+      target: village_folk
+      value: 1
+  summary: Cadence made 4 choices.
+- id: entry_1775354076121
+  date:
+    year: 859
+    season: spring
+    day: 9
+  characterId: cadence_bard_1775353904389
+  eventTemplateId: festival_approaches
+  choicesMade:
+    - campaign_for_a
+    - ask_for_nothing
+  consequences:
+    - type: stat
+      target: charisma
+      value: 1
+    - type: faction
+      target: merchants_guild
+      value: 2
+    - type: faction
+      target: village_folk
+      value: -1
+    - type: relationship
+      target: '{candidate_a.id}'
+      value: 3
+    - type: stat
+      target: charisma
+      value: 1
+    - type: relationship
+      target: '{candidate_a.id}'
+      value: 1
+  summary: Cadence made 2 choices.
