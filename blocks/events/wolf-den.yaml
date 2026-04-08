@@ -4,6 +4,9 @@ tags:
   - action
   - exploration
   - danger
+storyline: wolf_hunt
+chapter: 2
+reentry_recap: "You tracked the wolves into the hills. The trail is fresh and the den is closer than expected."
 
 preconditions:
   - type: world_fact

@@ -4,6 +4,14 @@ tags:
   - faction
   - questline
   - intrigue
+storyline: demon_war
+chapter: 2
+reentry_recap: "The border has fallen. While others mourn, someone is already counting their coins. You have crossed their path."
+escalation:
+  chance_base: 0.15
+  advances_to: siege_preparations
+  world_facts_set:
+    profiteer_confronted: true
 
 preconditions:
   - type: questline_stage

@@ -4,6 +4,14 @@ tags:
   - social
   - intrigue
   - commerce
+storyline: market_conspiracy
+chapter: 1
+reentry_recap: null
+escalation:
+  chance_base: 0.1
+  advances_to: null
+  world_facts_set:
+    price_fixing_discovered: true
 
 preconditions: []
 

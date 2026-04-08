@@ -4,6 +4,14 @@ tags:
   - social
   - faction
   - intrigue
+storyline: town_politics
+chapter: 2
+reentry_recap: "The town is voting. Ironhaven's next year of leadership hinges on who shows up and what they say."
+escalation:
+  chance_base: 0.2
+  advances_to: secret_alliance
+  world_facts_set:
+    guild_conflict_resolved: true
 
 preconditions: []
 

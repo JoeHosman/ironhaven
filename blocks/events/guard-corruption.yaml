@@ -4,6 +4,14 @@ tags:
   - intrigue
   - faction
   - danger
+storyline: guild_conflict
+chapter: 2
+reentry_recap: "The guild dispute has drawn in a guard who is taking coin from both sides. Someone needs to deal with it."
+escalation:
+  chance_base: 0.2
+  advances_to: guild_confrontation
+  world_facts_set:
+    warned_guild: true
 
 preconditions:
   - type: world_fact

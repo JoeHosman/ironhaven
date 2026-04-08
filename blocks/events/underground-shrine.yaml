@@ -4,6 +4,9 @@ tags:
   - mystery
   - danger
   - exploration
+storyline: sealed_depths
+chapter: 3
+reentry_recap: "The passage leads somewhere. You have been putting off going back. You cannot put it off any longer."
 
 preconditions:
   - type: world_fact

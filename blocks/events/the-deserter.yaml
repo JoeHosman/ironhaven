@@ -4,6 +4,14 @@ tags:
   - danger
   - questline
   - intrigue
+storyline: demon_war
+chapter: 2
+reentry_recap: "With the border gone, soldiers are slipping away in the night. One found you. They are not what you expected."
+escalation:
+  chance_base: 0.15
+  advances_to: the_last_stand
+  world_facts_set:
+    turned_in_deserter: true
 
 preconditions:
   - type: questline_stage

@@ -4,6 +4,14 @@ tags:
   - social
   - faith
   - intrigue
+storyline: faith_and_superstition
+chapter: 2
+reentry_recap: "Suspicion has fallen on the town's healer. What you believe about faith and folk-knowledge shapes what you do next."
+escalation:
+  chance_base: 0.2
+  advances_to: blessing_or_curse
+  world_facts_set:
+    healer_defended: true
 
 preconditions: []
 

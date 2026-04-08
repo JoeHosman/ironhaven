@@ -4,6 +4,9 @@ tags:
   - social
   - faction
   - intrigue
+storyline: town_politics
+chapter: 3
+reentry_recap: "Your choices had consequences for someone. They are being driven out and they have come to find you before they go."
 
 preconditions:
   - operator: or

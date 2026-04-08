@@ -4,6 +4,9 @@ tags:
   - intrigue
   - faction
   - social
+storyline: guild_conflict
+chapter: 3
+reentry_recap: "You reported the corruption. The captain of the guard has opened an investigation and wants a word with you."
 
 preconditions:
   - type: world_fact

@@ -4,6 +4,14 @@ tags:
   - mystery
   - exploration
   - intrigue
+storyline: sealed_depths
+chapter: 2
+reentry_recap: "The carvings you found below the cellar have not left your mind. Someone else has noticed them too."
+escalation:
+  chance_base: 0.15
+  advances_to: mysterious_scholar
+  world_facts_set:
+    symbols_studied: true
 
 preconditions:
   - type: world_fact

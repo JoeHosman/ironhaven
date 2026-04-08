@@ -3,6 +3,14 @@ name: The Guard's Questions
 tags:
   - intrigue
   - action
+storyline: traveler_mystery
+chapter: 2
+reentry_recap: "You reported the traveler to the guard. Now the guard has questions you were not expecting."
+escalation:
+  chance_base: 0.2
+  advances_to: strangers_asking
+  world_facts_set:
+    cooperated_with_guard: true
 
 preconditions:
   - type: world_fact

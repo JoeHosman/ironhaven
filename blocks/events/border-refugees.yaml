@@ -4,6 +4,14 @@ tags:
   - social
   - faction
   - questline
+storyline: demon_war
+chapter: 1
+reentry_recap: null
+escalation:
+  chance_base: 0.2
+  advances_to: war_profiteer
+  world_facts_set:
+    refugees_sheltered: true
 
 preconditions:
   - type: questline_stage
