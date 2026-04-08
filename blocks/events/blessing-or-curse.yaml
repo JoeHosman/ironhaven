@@ -4,6 +4,9 @@ tags:
   - faith
   - mystery
   - intrigue
+storyline: faith_and_superstition
+chapter: 3
+reentry_recap: "Something strange has been following you since the shrine. The wise woman says she knows what it means."
 
 preconditions:
   - operator: or

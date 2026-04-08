@@ -4,6 +4,14 @@ tags:
   - intrigue
   - social
   - faction
+storyline: guild_conflict
+chapter: 2
+reentry_recap: "The guild dispute has opened a door for a merchant with sharper ambitions. They want you involved."
+escalation:
+  chance_base: 0.2
+  advances_to: guild_confrontation
+  world_facts_set:
+    joined_scheme: true
 
 preconditions:
   - type: world_fact

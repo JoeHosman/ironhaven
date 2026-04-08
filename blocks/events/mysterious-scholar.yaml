@@ -4,6 +4,9 @@ tags:
   - mystery
   - intrigue
   - social
+storyline: sealed_depths
+chapter: 3
+reentry_recap: "A scholar arrived in Ironhaven asking questions about old stonework. They seem to know more than they are letting on."
 
 preconditions:
   - type: world_fact

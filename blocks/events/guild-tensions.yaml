@@ -4,6 +4,14 @@ tags:
   - social
   - intrigue
   - faction
+storyline: guild_conflict
+chapter: 1
+reentry_recap: null
+escalation:
+  chance_base: 0.2
+  advances_to: guard_corruption
+  world_facts_set:
+    guild_dispute: true
 
 preconditions: []
 

@@ -4,6 +4,14 @@ tags:
   - faction
   - questline
   - social
+storyline: demon_war
+chapter: 1
+reentry_recap: null
+escalation:
+  chance_base: 0.2
+  advances_to: siege_preparations
+  world_facts_set:
+    volunteers_recruited: true
 
 preconditions:
   - type: questline_stage

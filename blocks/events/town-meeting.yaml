@@ -4,6 +4,14 @@ tags:
   - social
   - faction
   - intrigue
+storyline: town_politics
+chapter: 1
+reentry_recap: null
+escalation:
+  chance_base: 0.2
+  advances_to: the_magistrate
+  world_facts_set:
+    spoke_at_meeting: true
 
 preconditions: []
 

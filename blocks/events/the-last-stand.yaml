@@ -4,6 +4,9 @@ tags:
   - combat
   - danger
   - questline
+storyline: demon_war
+chapter: 4
+reentry_recap: "The siege has begun. Every choice you have made leads here. Ironhaven holds or it falls."
 
 preconditions:
   - type: questline_stage

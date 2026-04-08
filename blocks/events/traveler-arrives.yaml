@@ -3,6 +3,14 @@ name: A Traveler Arrives
 tags:
   - social
   - intrigue
+storyline: traveler_mystery
+chapter: 1
+reentry_recap: null
+escalation:
+  chance_base: 0.15
+  advances_to: satchels_secret
+  world_facts_set:
+    traveler_hidden: true
 
 preconditions: []
 

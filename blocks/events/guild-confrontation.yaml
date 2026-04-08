@@ -4,6 +4,9 @@ tags:
   - social
   - faction
   - intrigue
+storyline: guild_conflict
+chapter: 3
+reentry_recap: "The guilds have been circling each other for days. Tonight it comes to a head and you are too deep in to walk away."
 
 preconditions:
   - type: world_fact

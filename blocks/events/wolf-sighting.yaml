@@ -3,6 +3,14 @@ name: Wolf Sighting
 tags:
   - action
   - exploration
+storyline: wolf_hunt
+chapter: 1
+reentry_recap: null
+escalation:
+  chance_base: 0.25
+  advances_to: wolf_den
+  world_facts_set:
+    wolves_tracked: true
 
 preconditions: []
 

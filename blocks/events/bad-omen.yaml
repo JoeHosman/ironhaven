@@ -4,6 +4,14 @@ tags:
   - intrigue
   - faith
   - social
+storyline: faith_and_superstition
+chapter: 1
+reentry_recap: null
+escalation:
+  chance_base: 0.15
+  advances_to: healer_in_need
+  world_facts_set:
+    shrine_disturbed: true
 
 preconditions: []
 

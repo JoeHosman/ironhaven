@@ -3,6 +3,9 @@ name: Strangers Asking
 tags:
   - intrigue
   - danger
+storyline: traveler_mystery
+chapter: 3
+reentry_recap: "The traveler's pursuers have caught up. Two riders are asking questions in town and they are asking about you."
 
 preconditions:
   - type: world_fact

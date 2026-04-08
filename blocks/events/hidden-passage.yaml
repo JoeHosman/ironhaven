@@ -4,6 +4,14 @@ tags:
   - mystery
   - exploration
   - danger
+storyline: sealed_depths
+chapter: 2
+reentry_recap: "There is more to the cellar than the first room. A crack in the far wall suggests a way deeper in."
+escalation:
+  chance_base: 0.15
+  advances_to: underground_shrine
+  world_facts_set:
+    passage_found: true
 
 preconditions:
   - type: world_fact

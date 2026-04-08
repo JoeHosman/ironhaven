@@ -4,6 +4,14 @@ tags:
   - faction
   - questline
   - action
+storyline: demon_war
+chapter: 3
+reentry_recap: "Ironhaven is preparing for the worst. The walls need reinforcing, the stores need counting, and people need leading."
+escalation:
+  chance_base: 0.25
+  advances_to: the_last_stand
+  world_facts_set:
+    siege_prepared: true
 
 preconditions:
   - type: questline_stage

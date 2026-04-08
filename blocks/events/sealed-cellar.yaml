@@ -4,6 +4,14 @@ tags:
   - intrigue
   - exploration
   - mystery
+storyline: sealed_depths
+chapter: 0
+reentry_recap: null
+escalation:
+  chance_base: 0.2
+  advances_to: the_sealed_depths
+  world_facts_set:
+    cellar_opened: true
 
 preconditions:
   - type: world_fact

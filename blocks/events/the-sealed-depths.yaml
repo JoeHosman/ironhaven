@@ -4,6 +4,14 @@ tags:
   - exploration
   - intrigue
   - action
+storyline: sealed_depths
+chapter: 1
+reentry_recap: "You broke the seal on the cellar. Whatever is below has been waiting a long time."
+escalation:
+  chance_base: 0.15
+  advances_to: ancient_symbols
+  world_facts_set:
+    depths_explored: true
 
 preconditions:
   - type: world_fact

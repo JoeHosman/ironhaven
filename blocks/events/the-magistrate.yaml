@@ -4,6 +4,14 @@ tags:
   - intrigue
   - faction
   - social
+storyline: town_politics
+chapter: 2
+reentry_recap: "Your words at the town meeting caught the wrong attention. The magistrate has sent for you."
+escalation:
+  chance_base: 0.2
+  advances_to: secret_alliance
+  world_facts_set:
+    testified_truthfully: true
 
 preconditions:
   - type: world_fact
